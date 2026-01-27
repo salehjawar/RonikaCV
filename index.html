@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Maker Pro Max</title>
+  
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Oswald:wght@500&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-shell">
+    
+    <div class="editor-panel">
+      <div class="header-logo">
+        <i class="fas fa-file-signature"></i> CV Maker Pro
+      </div>
+
+      <div class="sticky-controls">
+        <div class="add-buttons">
+            <button class="btn btn-outline" onclick="addItem('education')"><i class="fas fa-graduation-cap"></i> <span id="btnAddEdu">Edu</span></button>
+            <button class="btn btn-outline" onclick="addItem('experience')"><i class="fas fa-briefcase"></i> <span id="btnAddExp">Exp</span></button>
+            <button class="btn btn-outline" onclick="addItem('skill')"><i class="fas fa-star"></i> <span id="btnAddSkill">Skill</span></button>
+            <button class="btn btn-outline" onclick="addItem('language')"><i class="fas fa-language"></i> <span id="btnAddLang">Lang</span></button>
+        </div>
+      </div>
+      
+      <div class="scrollable-content">
+          <div class="form-group">
+            <label>Language / زمان</label>
+            <select id="languageSelect" onchange="updateUI()">
+              <option value="en">English</option>
+              <option value="ku">کوردی (سۆرانی)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label id="lblFont">Font Style</label>
+            <select id="fontSelect" onchange="renderPreview()">
+              <optgroup label="English Fonts">
+                <option value="'Segoe UI', sans-serif">Standard (Segoe UI)</option>
+                <option value="'Roboto', sans-serif">Modern (Roboto)</option>
+                <option value="'Lato', sans-serif">Clean (Lato)</option>
+                <option value="'Merriweather', serif">Elegant (Merriweather)</option>
+                <option value="'Playfair Display', serif">Luxury (Playfair)</option>
+                <option value="'Oswald', sans-serif">Bold (Oswald)</option>
+                <option value="'Montserrat', sans-serif">Geometric (Montserrat)</option>
+              </optgroup>
+              <optgroup label="Kurdish/Persian Fonts">
+                <option value="'Vazirmatn', sans-serif">Vazirmatn (Standard)</option>
+                <option value="Tahoma, sans-serif">Tahoma (Classic)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label id="lblTemplate">Template Style</label>
+            <div class="template-grid">
+              <div class="t-opt active" onclick="setTemplate('modern', this)">Modern</div>
+              <div class="t-opt" onclick="setTemplate('elegant', this)">Elegant</div>
+              <div class="t-opt" onclick="setTemplate('creative', this)">Creative</div>
+              <div class="t-opt" onclick="setTemplate('minimal', this)">Minimal</div>
+              <div class="t-opt" onclick="setTemplate('bold', this)">Bold Dark</div>
+              <div class="t-opt" onclick="setTemplate('compact', this)">Compact</div>
+            </div>
+            <input type="hidden" id="templateSelect" value="modern">
+          </div>
+
+          <hr>
+
+          <button class="accordion-btn" onclick="toggleSection('personalForm')">
+            <i class="fas fa-user"></i> <span id="lblPersonal">Personal Info</span>
+          </button>
+          <div id="personalForm" class="accordion-content open">
+            <div class="form-group"><input type="text" id="fullName" placeholder="Full Name" oninput="renderPreview()"></div>
+            <div class="form-group"><input type="text" id="jobTitle" placeholder="Job Title" oninput="renderPreview()"></div>
+            <div class="form-group"><input type="text" id="phone" placeholder="Phone" oninput="renderPreview()"></div>
+            <div class="form-group"><input type="text" id="email" placeholder="Email" oninput="renderPreview()"></div>
+            <div class="form-group"><input type="text" id="address" placeholder="Address" oninput="renderPreview()"></div>
+            <div class="form-group">
+                <label id="lblPhoto">Photo</label>
+                <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)">
+            </div>
+            <div class="form-group"><textarea id="summary" placeholder="Summary..." rows="3" oninput="renderPreview()"></textarea></div>
+          </div>
+
+          <hr>
+          
+          <div id="educationContainer" class="items-container"></div>
+          <div id="experienceContainer" class="items-container"></div>
+          <div id="skillContainer" class="items-container"></div>
+          <div id="languageContainer" class="items-container"></div>
+
+          <hr>
+
+          <h4 id="lblExport">Export</h4>
+          <button class="btn btn-export pdf-btn" onclick="exportPDF()">
+            <i class="fas fa-file-pdf"></i> Download PDF
+          </button>
+          <button class="btn btn-export word-btn" onclick="exportWord()">
+            <i class="fas fa-file-word"></i> Download Word
+          </button>
+
+          <hr>
+
+          <h4 id="lblSaveLoad">Save / Load</h4>
+          <div style="display:flex; gap:10px; flex-wrap: wrap;">
+            <button class="btn btn-outline" onclick="saveProjectData()" style="flex:1; background:#f8f9fa; color:#333;">
+              <i class="fas fa-download"></i> Save
+            </button>
+            <input type="file" id="loadInput" style="display:none" onchange="loadProjectData(this)" accept=".json">
+            <button class="btn btn-outline" onclick="document.getElementById('loadInput').click()" style="flex:1; background:#f8f9fa; color:#333;">
+              <i class="fas fa-upload"></i> Load
+            </button>
+          </div>
+          <button class="btn btn-outline" onclick="resetData()" style="margin-top:10px; background:#ffebee; color:red; border-color:red;">
+            <i class="fas fa-trash"></i> Reset / Clear
+          </button>
+
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <div id="resumePreview">
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
