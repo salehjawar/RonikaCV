@@ -135,6 +135,63 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
 .template-compact .cols { display: grid; grid-template-columns: 65% 35%; gap: 25px; }
 .template-compact .section-title { font-size: 14px; font-weight: bold; color: #fff; background: #2980b9; padding: 3px 8px; margin: 15px 0 10px 0; border-radius: 3px; text-transform: uppercase; }
 
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media screen and (max-width: 1024px) {
+  body {
+    overflow: auto; /* اسکرول کلی صفحه در موبایل */
+    height: auto;
+  }
+
+  .app-shell {
+    flex-direction: column; /* چیدمان عمودی */
+    height: auto;
+  }
+
+  /* پنل ادیتور در بالا */
+  .editor-panel {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 2px solid #ddd;
+    max-height: 60vh; /* حداکثر 60 درصد ارتفاع برای ادیتور */
+    overflow-y: auto;
+  }
+
+  .header-logo {
+    text-align: center;
+    padding: 15px;
+  }
+
+  /* دکمه‌های چسبان در موبایل */
+  .sticky-controls {
+    position: relative;
+    top: 0;
+    padding: 10px;
+    background: #fff;
+  }
+
+  /* پنل پیش‌نمایش در پایین */
+  .preview-panel {
+    width: 100%;
+    height: auto;
+    overflow-x: auto; /* اسکرول افقی برای دیدن کل A4 */
+    padding: 20px 10px;
+    background: #525659;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* تنظیم سایز A4 در موبایل */
+  #resumePreview {
+    /* کمی کوچکتر نشان دادن برای جا شدن بهتر */
+    transform: scale(0.9); 
+    transform-origin: top center;
+    margin-bottom: 0;
+  }
+}
+
+
 @media print {
   body { background: white; margin: 0 !important; padding: 0 !important; height: auto; overflow: visible; }
   .editor-panel { display: none; }
