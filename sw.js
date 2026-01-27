@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ronikacv-v1';
+const CACHE_NAME = 'ronikacv-v2';
 const ASSETS = [
   './',
   './index.html',
