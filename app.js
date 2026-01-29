@@ -30,8 +30,25 @@ function updateUI() {
 
 function setTemplate(name, el) {
   state.template = name;
-  document.querySelectorAll('.t-opt').forEach(d => d.classList.remove('active'));
-  el.classList.add('active');
+  
+  // آپدیت دکمه‌های پنل ادیتور (دسکتاپ)
+  document.querySelectorAll('.t-opt').forEach(d => {
+      d.classList.remove('active');
+      // اگر روی دکمه موبایل کلیک شده، دکمه دسکتاپِ معادلش را پیدا کن و اکتیو کن
+      if(d.textContent.toLowerCase().includes(name) || d.getAttribute('onclick').includes(name)) {
+          d.classList.add('active');
+      }
+  });
+
+  // آپدیت دکمه‌های نوار موبایل
+  document.querySelectorAll('.mt-opt').forEach(d => {
+      d.classList.remove('active');
+      if(d.dataset.t === name) d.classList.add('active');
+  });
+
+  // اگر خودِ المنت کلیک شده هم کلاسی دارد، هندل شود (برای اطمینان)
+  if(el && el.classList) el.classList.add('active');
+
   renderPreview();
 }
 
