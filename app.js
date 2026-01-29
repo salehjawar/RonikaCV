@@ -381,18 +381,39 @@ function renderPreview() {
 
 function exportPDF() {
   const element = document.getElementById('resumePreview');
+  
+  // 1. ذخیره استایل‌های فعلی
+  const originalTransform = element.style.transform;
+  const originalWidth = element.style.width;
+  
+  // 2. تنظیم موقت برای اکسپورت صحیح (شبیه دسکتاپ)
+  // حذف تمام استایل‌های زوم موبایل
+  element.style.transform = 'none';
+  element.style.width = '100%'; 
+  element.style.margin = '0';
+  
+  // برای موبایل: اسکرول صفحه را موقتا قفل میکنیم تا پرش نکند
+  document.body.style.overflow = 'hidden';
+
   const opt = {
-    margin: 0,
-    filename: 'CV.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    margin:       0,
+    filename:     'CV.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { 
+      scale: 2, 
+      useCORS: true, 
+      scrollY: 0,
+      windowWidth: 794 // عرض استاندارد A4 در پیکسل
+    },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
-  element.style.minHeight = 'unset';
-  element.style.height = 'auto';
+  
   html2pdf().set(opt).from(element).save().then(() => {
-     element.style.minHeight = '';
-     element.style.height = '';
+    // 3. بازگرداندن به حالت موبایل
+    element.style.transform = '';
+    element.style.width = '';
+    element.style.margin = '';
+    document.body.style.overflow = '';
   });
 }
 
