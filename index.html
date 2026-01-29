@@ -23,7 +23,7 @@
 
   <div class="app-shell">
     
-    <div class="editor-panel" id="editorTab">
+    <div class="editor-panel active" id="editorTab">
       <div class="header-logo">
         <i class="fas fa-file-signature"></i> CV Maker Pro
       </div>
@@ -63,17 +63,17 @@
             </select>
           </div>
 
-          <div class="form-group">
+          <div class="form-group desktop-template-selector">
             <label id="lblTemplate">Template Style</label>
             <div class="template-grid">
-              <div class="t-opt active" onclick="setTemplate('sky', this)">Sky Blue (New)</div>
-              <div class="t-opt" onclick="setTemplate('modern', this)">Modern</div>
+              <div class="t-opt" onclick="setTemplate('sky', this)">Sky Blue</div>
+              <div class="t-opt active" onclick="setTemplate('modern', this)">Modern</div>
               <div class="t-opt" onclick="setTemplate('elegant', this)">Elegant</div>
               <div class="t-opt" onclick="setTemplate('creative', this)">Creative</div>
               <div class="t-opt" onclick="setTemplate('minimal', this)">Minimal</div>
               <div class="t-opt" onclick="setTemplate('bold', this)">Bold Dark</div>
             </div>
-            <input type="hidden" id="templateSelect" value="sky">
+            <input type="hidden" id="templateSelect" value="modern">
           </div>
 
           <hr>
@@ -127,15 +127,15 @@
             <i class="fas fa-trash"></i> Reset / Clear
           </button>
           
-          <div style="height: 80px;"></div> 
+          <div style="height: 100px;"></div> 
       </div>
     </div>
 
     <div class="preview-panel" id="previewTab">
       
       <div class="mobile-template-bar">
-        <div class="mt-opt active" onclick="setTemplate('sky', this)" data-t="sky">Sky</div>
-        <div class="mt-opt" onclick="setTemplate('modern', this)" data-t="modern">Modern</div>
+        <div class="mt-opt" onclick="setTemplate('sky', this)" data-t="sky">Sky</div>
+        <div class="mt-opt active" onclick="setTemplate('modern', this)" data-t="modern">Modern</div>
         <div class="mt-opt" onclick="setTemplate('elegant', this)" data-t="elegant">Elegant</div>
         <div class="mt-opt" onclick="setTemplate('creative', this)" data-t="creative">Creative</div>
         <div class="mt-opt" onclick="setTemplate('minimal', this)" data-t="minimal">Minimal</div>
@@ -145,7 +145,18 @@
       <div id="resumePreview">
       </div>
       
-      <div style="height: 100px; width: 100%;"></div>
+      <div style="height: 120px; width: 100%;"></div>
+    </div>
+
+    <div class="mobile-nav">
+        <button class="nav-btn active" onclick="switchMobileTab('editor')" id="navEdit">
+            <i class="fas fa-edit"></i>
+            <span>Edit</span>
+        </button>
+        <button class="nav-btn" onclick="switchMobileTab('preview')" id="navPreview">
+            <i class="fas fa-eye"></i>
+            <span>Preview</span>
+        </button>
     </div>
 
   </div>
@@ -154,13 +165,11 @@
   <script src="app.js"></script>
 
   <script>
-    // ثبت سرویس ورکر با استراتژی جدید
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then((reg) => {
-            // چک کردن آپدیت در هر بار لود شدن صفحه
-            reg.update();
+            reg.update(); // اجبار به بررسی آپدیت
             console.log('SW Registered');
           })
           .catch((err) => console.log('SW Error:', err));
