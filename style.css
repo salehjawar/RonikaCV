@@ -7,9 +7,9 @@
   --a4-w: 210mm;
   --a4-h: 296.8mm;
   
-  /* رنگ‌های قالب Sky */
-  --sky-blue: #0891b2; /* رنگ آبی نفتی عکس */
-  --sky-gray: #f0f2f5; /* رنگ پس زمینه سایدبار */
+  /* Sky Template Colors */
+  --sky-blue: #0891b2;
+  --sky-gray: #f0f2f5;
 }
 
 * { box-sizing: border-box; }
@@ -74,7 +74,6 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
   position: relative;
 }
 
-/* Visual Helpers */
 .skill-bar-container { background: #eee; height: 6px; width: 100%; border-radius: 3px; margin-top: 5px; overflow: hidden; }
 .skill-bar-fill { height: 100%; background: var(--accent); }
 .stars { color: #f1c40f; letter-spacing: 2px; }
@@ -82,82 +81,37 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .dot { width: 10px; height: 10px; border-radius: 50%; background: #eee; }
 .dot.filled { background: var(--accent); }
 
-/* Common Items */
 .item { margin-bottom: 15px; }
 .item-head { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
 .item-sub { font-size: 13px; color: #666; font-style: italic; }
 .item-desc { font-size: 13px; margin-top: 3px; text-align: justify; line-height: 1.4; color: #444; }
 
-/* ================= TEMPLATES ================= */
-
-/* --- NEW: SKY BLUE TEMPLATE (Based on your image) --- */
+/* TEMPLATES (ALL SAME AS BEFORE) */
+/* SKY TEMPLATE */
 .template-sky { display: flex; min-height: var(--a4-h); background: linear-gradient(to right, var(--sky-gray) 35%, white 35%); }
 .template-sky .sidebar { width: 35%; padding: 30px 20px; color: #333; }
 .template-sky .main { width: 65%; padding: 40px 30px; color: #333; }
-
-/* Photo */
-.template-sky .photo { 
-    width: 150px; height: 150px; border-radius: 50%; object-fit: cover; 
-    margin: 0 auto 30px auto; display: block;
-    border: 0; /* عکس ساده */
-}
-
-/* Headers */
+.template-sky .photo { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 0 auto 30px auto; display: block; border: 0; }
 .template-sky h1 { font-size: 26px; text-transform: uppercase; color: var(--sky-blue); margin: 0; font-weight: 800; letter-spacing: 1px; }
 .template-sky h2 { font-size: 14px; text-transform: uppercase; color: #666; margin-top: 5px; letter-spacing: 2px; border-bottom: 1px solid #ddd; padding-bottom: 20px; margin-bottom: 20px;}
-
-/* Section Titles */
-.template-sky .section-title {
-    font-size: 16px; font-weight: 700; text-transform: uppercase; color: var(--sky-blue);
-    margin: 25px 0 15px 0; letter-spacing: 1px;
-}
-
-/* Sidebar Specifics */
+.template-sky .section-title { font-size: 16px; font-weight: 700; text-transform: uppercase; color: var(--sky-blue); margin: 25px 0 15px 0; letter-spacing: 1px; }
 .template-sky .sidebar .section-title { color: var(--sky-blue); border-bottom: none; }
 .template-sky .contact-item { font-size: 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: #444; }
 .template-sky .contact-item i { color: var(--sky-blue); width: 15px; }
-
-/* Timeline Items (Main Column) */
-.template-sky .main .item {
-    border-left: 2px solid var(--sky-blue);
-    padding-left: 15px;
-    margin-left: 5px;
-    position: relative;
-    padding-bottom: 10px;
-}
-.template-sky .main .item::before {
-    content: ''; position: absolute; left: -6px; top: 5px;
-    width: 10px; height: 10px; border-radius: 50%;
-    background: white; border: 2px solid var(--sky-blue);
-}
+.template-sky .main .item { border-left: 2px solid var(--sky-blue); padding-left: 15px; margin-left: 5px; position: relative; padding-bottom: 10px; }
+.template-sky .main .item::before { content: ''; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: white; border: 2px solid var(--sky-blue); }
 .template-sky .item-head span:first-child { color: #000; font-weight: 800; text-transform: uppercase; font-size: 13px;}
 .template-sky .item-sub { color: #555; font-weight: 600; font-size: 12px; text-decoration: underline; margin-bottom: 5px;}
-
-/* Sidebar Education (Simple timeline) */
-.template-sky .sidebar .item {
-    border-left: 2px solid var(--sky-blue);
-    padding-left: 15px;
-    margin-left: 5px;
-    position: relative;
-}
-.template-sky .sidebar .item::before {
-    content: ''; position: absolute; left: -5px; top: 6px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--sky-blue);
-}
-
-/* Visuals for Sky */
+.template-sky .sidebar .item { border-left: 2px solid var(--sky-blue); padding-left: 15px; margin-left: 5px; position: relative; }
+.template-sky .sidebar .item::before { content: ''; position: absolute; left: -5px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--sky-blue); }
 .template-sky .skill-bar-fill { background: var(--sky-blue); }
 .template-sky .dot.filled { background: var(--sky-blue); }
-
-/* RTL Fix */
 body.rtl .template-sky { flex-direction: row-reverse; background: linear-gradient(to left, var(--sky-gray) 35%, white 35%); text-align: right; }
 body.rtl .template-sky .main .item, body.rtl .template-sky .sidebar .item { border-left: none; border-right: 2px solid var(--sky-blue); padding-left: 0; padding-right: 15px; margin-left: 0; margin-right: 5px;}
 body.rtl .template-sky .main .item::before { left: auto; right: -6px; }
 body.rtl .template-sky .sidebar .item::before { left: auto; right: -5px; }
 
-
-/* --- EXISTING TEMPLATES --- */
+/* MODERN */
 .template-modern { display: flex; min-height: var(--a4-h); background: linear-gradient(to right, #2c3e50 32%, white 32%); }
 .template-modern .sidebar { width: 32%; background: transparent; color: white; padding: 30px 20px; text-align: center; }
 .template-modern .main { width: 68%; padding: 40px 30px; color: #333; }
@@ -170,6 +124,7 @@ body.rtl .template-sky .sidebar .item::before { left: auto; right: -5px; }
 .template-modern .sidebar .section-title::before { display: none; }
 body.rtl .template-modern { flex-direction: row-reverse; background: linear-gradient(to left, #2c3e50 32%, white 32%); }
 
+/* ELEGANT */
 .template-elegant { padding: 40px; min-height: var(--a4-h); }
 .template-elegant header { text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 20px; margin-bottom: 20px; }
 .template-elegant .photo { width: 140px; height: 140px; max-width: 140px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 1px solid #ddd; padding: 3px; display: inline-block;}
@@ -179,6 +134,7 @@ body.rtl .template-modern { flex-direction: row-reverse; background: linear-grad
 .template-elegant .section-title { font-family: serif; font-size: 16px; font-weight: bold; text-transform: uppercase; color: #2c3e50; margin: 25px 0 15px 0; border-left: 4px solid #c0392b; padding-left: 10px; background: #f9f9f9; padding: 5px 10px; }
 body.rtl .template-elegant .section-title { border-left: none; border-right: 4px solid #c0392b; }
 
+/* CREATIVE */
 .template-creative { padding: 40px; min-height: var(--a4-h); }
 .template-creative header { display: flex; align-items: center; gap: 20px; border-bottom: 4px solid #f39c12; padding-bottom: 20px; margin-bottom: 30px; }
 .template-creative .photo { width: 100px; height: 100px; border-radius: 10px; object-fit: cover; }
@@ -187,12 +143,14 @@ body.rtl .template-elegant .section-title { border-left: none; border-right: 4px
 .template-creative .item { border-left: 2px solid #eee; padding-left: 20px; margin-left: 5px; }
 body.rtl .template-creative .item { border-left: none; border-right: 2px solid #eee; padding-right: 20px; }
 
+/* MINIMAL */
 .template-minimal { padding: 50px; text-align: left; min-height: var(--a4-h); }
 .template-minimal header { margin-bottom: 40px; }
 .template-minimal h1 { font-size: 40px; font-weight: 300; letter-spacing: -1px; margin: 0; color: #000; }
 .template-minimal h2 { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-top: 5px; }
 .template-minimal .section-title { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #000; margin: 30px 0 20px 0; padding-bottom: 5px; font-weight: bold; }
 
+/* BOLD */
 .template-bold { display: flex; flex-direction: column; min-height: var(--a4-h); }
 .template-bold header { background: #1a1a1a; color: white; padding: 40px; display: flex; align-items: center; gap: 20px; }
 .template-bold .photo { width: 110px; height: 110px; border-radius: 50%; border: 3px solid #f1c40f; object-fit: cover; }
@@ -202,125 +160,67 @@ body.rtl .template-creative .item { border-left: none; border-right: 2px solid #
 .template-bold .section-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #1a1a1a; margin-bottom: 15px; border-bottom: 3px solid #f1c40f; display: inline-block; }
 body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #eee; padding-left: 20px; }
 
+/* COMPACT */
 .template-compact { padding: 30px; font-size: 13px; min-height: var(--a4-h); }
 .template-compact header { border-bottom: 2px solid #2980b9; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
 .template-compact h1 { color: #2980b9; margin: 0; font-size: 28px; line-height: 1; }
 .template-compact .cols { display: grid; grid-template-columns: 65% 35%; gap: 25px; }
 .template-compact .section-title { font-size: 14px; font-weight: bold; color: #fff; background: #2980b9; padding: 3px 8px; margin: 15px 0 10px 0; border-radius: 3px; text-transform: uppercase; }
 
-/* ===== MOBILE NAVIGATION & RESPONSIVE ===== */
-.mobile-nav {
-    display: none; /* Desktop default: Hidden */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: white;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    z-index: 1000;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid #eee;
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #999;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.nav-btn i { font-size: 20px; margin-bottom: 4px; }
-.nav-btn.active { color: var(--primary); font-weight: bold; }
-
-/* ===== MOBILE RESPONSIVENESS ===== */
-/* استایل نوار قالب موبایل (در دسکتاپ مخفی است) */
+/* ===== MOBILE & PRINT ===== */
 .mobile-template-bar { display: none; }
+.mobile-nav { display: none; }
 
 @media screen and (max-width: 1024px) {
-    body { overflow: hidden; height: 100vh; /* جلوگیری از اسکرول کلی بادی */ }
-    
+    body { overflow: hidden; height: 100vh; }
     .app-shell { flex-direction: column; height: 100%; }
     
-    /* پنل ادیتور */
     .editor-panel { 
-        width: 100%; 
-        border-right: none; 
-        height: calc(100vh - 60px); /* ارتفاع منهای نوار پایین */
-        overflow-y: auto;
-        padding-bottom: 80px;
+        width: 100%; border-right: none; 
+        height: calc(100vh - 60px); 
+        overflow-y: auto; padding-bottom: 80px; 
+        display: none; /* پیش فرض مخفی */
     }
+    .editor-panel.active { display: flex; }
 
-    /* پنل پیش‌نمایش */
     .preview-panel { 
-        width: 100%; 
-        height: calc(100vh - 60px);
+        width: 100%; height: calc(100vh - 60px);
         background: #525659;
-        display: none; 
-        /* حذف پدینگ برای استفاده حداکثری از فضا */
-        padding: 0; 
-        padding-top: 60px; /* جا برای نوار قالب بالا */
-        overflow-y: auto;
-        overflow-x: hidden;
+        display: none; /* پیش فرض مخفی */
+        padding: 0; padding-top: 60px;
+        overflow-y: auto; overflow-x: hidden;
         position: relative;
     }
+    .preview-panel.active { display: flex; }
     
-    /* نوار قالب افقی در بالای پرویو */
     .mobile-template-bar {
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        padding: 10px;
-        background: white;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 50;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        /* مخفی کردن اسکرول‌بار زشت */
+        display: flex; gap: 10px; overflow-x: auto; padding: 10px;
+        background: white; position: fixed; top: 0; left: 0; width: 100%;
+        z-index: 50; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         scrollbar-width: none; 
     }
     .mobile-template-bar::-webkit-scrollbar { display: none; }
-
     .mt-opt {
-        white-space: nowrap;
-        padding: 6px 15px;
-        background: #f0f0f0;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-        color: #555;
+        white-space: nowrap; padding: 6px 15px; background: #f0f0f0;
+        border-radius: 20px; font-size: 12px; font-weight: bold; color: #555;
     }
-    .mt-opt.active {
-        background: var(--primary);
-        color: white;
-    }
+    .mt-opt.active { background: var(--primary); color: white; }
 
-    /* تنظیم سایز A4 برای موبایل - تمام صفحه */
-    #resumePreview { 
-        /* مقیاس را بر اساس عرض صفحه تنظیم میکنیم */
-        /* عرض A4 حدود 800 پیکسل است. در موبایل حدود 360 تا 400 پیکسل داریم */
-        /* پس مقیاس 0.45 تا 0.5 مناسب است */
-        transform: scale(0.46); 
-        transform-origin: top center;
-        margin: 10px auto 0 auto;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    #resumePreview { transform: scale(0.46); transform-origin: top center; margin: 10px auto 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    
+    .mobile-nav { 
+        display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+        background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        z-index: 1000; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee;
     }
-    
-    .mobile-nav { display: flex; z-index: 100; } 
-    
-    .editor-panel.active { display: flex; }
-    .preview-panel.active { display: flex; }
+    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: #999; font-size: 12px; cursor: pointer; }
+    .nav-btn i { font-size: 20px; margin-bottom: 4px; }
+    .nav-btn.active { color: var(--primary); font-weight: bold; }
 }
 
 @media print {
   body { background: white; margin: 0 !important; padding: 0 !important; height: auto; overflow: visible; }
-  .editor-panel, .sticky-controls, .mobile-nav { display: none !important; }
+  .editor-panel, .sticky-controls, .mobile-nav, .mobile-template-bar { display: none !important; }
   .preview-panel { padding: 0; margin: 0; display: block !important; }
   #resumePreview { box-shadow: none; margin: 0; width: 100%; min-height: 0 !important; height: auto !important; transform: none !important; }
   .template-modern, .template-bold, .template-sky { min-height: 0 !important; height: auto !important; }
