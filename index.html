@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>CV Maker Pro Max</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="./icon-192.png?v=2">
-  <link rel="icon" type="image/png" href="./icon-192.png?v=2">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" href="./icon-192.png">
   
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Oswald:wght@500&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600;700&family=Oswald:wght@500&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -23,7 +23,7 @@
 
   <div class="app-shell">
     
-    <div class="editor-panel">
+    <div class="editor-panel" id="editorTab">
       <div class="header-logo">
         <i class="fas fa-file-signature"></i> CV Maker Pro
       </div>
@@ -50,13 +50,11 @@
             <label id="lblFont">Font Style</label>
             <select id="fontSelect" onchange="renderPreview()">
               <optgroup label="English Fonts">
-                <option value="'Segoe UI', sans-serif">Standard (Segoe UI)</option>
+                <option value="'Open Sans', sans-serif">Clean (Open Sans)</option>
                 <option value="'Roboto', sans-serif">Modern (Roboto)</option>
-                <option value="'Lato', sans-serif">Clean (Lato)</option>
-                <option value="'Merriweather', serif">Elegant (Merriweather)</option>
-                <option value="'Playfair Display', serif">Luxury (Playfair)</option>
-                <option value="'Oswald', sans-serif">Bold (Oswald)</option>
-                <option value="'Montserrat', sans-serif">Geometric (Montserrat)</option>
+                <option value="'Segoe UI', sans-serif">Standard (Segoe UI)</option>
+                <option value="'Lato', sans-serif">Lato</option>
+                <option value="'Merriweather', serif">Elegant</option>
               </optgroup>
               <optgroup label="Kurdish/Persian Fonts">
                 <option value="'Vazirmatn', sans-serif">Vazirmatn (Standard)</option>
@@ -68,14 +66,14 @@
           <div class="form-group">
             <label id="lblTemplate">Template Style</label>
             <div class="template-grid">
-              <div class="t-opt active" onclick="setTemplate('modern', this)">Modern</div>
+              <div class="t-opt active" onclick="setTemplate('sky', this)">Sky Blue (New)</div>
+              <div class="t-opt" onclick="setTemplate('modern', this)">Modern</div>
               <div class="t-opt" onclick="setTemplate('elegant', this)">Elegant</div>
               <div class="t-opt" onclick="setTemplate('creative', this)">Creative</div>
               <div class="t-opt" onclick="setTemplate('minimal', this)">Minimal</div>
               <div class="t-opt" onclick="setTemplate('bold', this)">Bold Dark</div>
-              <div class="t-opt" onclick="setTemplate('compact', this)">Compact</div>
             </div>
-            <input type="hidden" id="templateSelect" value="modern">
+            <input type="hidden" id="templateSelect" value="sky">
           </div>
 
           <hr>
@@ -128,13 +126,26 @@
           <button class="btn btn-outline" onclick="resetData()" style="margin-top:10px; background:#ffebee; color:red; border-color:red;">
             <i class="fas fa-trash"></i> Reset / Clear
           </button>
-
+          
+          <div style="height: 80px;"></div> 
       </div>
     </div>
 
-    <div class="preview-panel">
+    <div class="preview-panel" id="previewTab">
       <div id="resumePreview">
       </div>
+      <div style="height: 80px; width: 100%;"></div>
+    </div>
+
+    <div class="mobile-nav">
+        <button class="nav-btn active" onclick="switchMobileTab('editor')" id="navEdit">
+            <i class="fas fa-edit"></i>
+            <span>Edit</span>
+        </button>
+        <button class="nav-btn" onclick="switchMobileTab('preview')" id="navPreview">
+            <i class="fas fa-eye"></i>
+            <span>Preview</span>
+        </button>
     </div>
 
   </div>
