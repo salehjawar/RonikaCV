@@ -237,25 +237,83 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
 .nav-btn i { font-size: 20px; margin-bottom: 4px; }
 .nav-btn.active { color: var(--primary); font-weight: bold; }
 
+/* ===== MOBILE RESPONSIVENESS ===== */
+/* استایل نوار قالب موبایل (در دسکتاپ مخفی است) */
+.mobile-template-bar { display: none; }
+
 @media screen and (max-width: 1024px) {
-    body { overflow: auto; height: auto; padding-bottom: 60px; /* Space for nav */ }
+    body { overflow: hidden; height: 100vh; /* جلوگیری از اسکرول کلی بادی */ }
     
-    .app-shell { flex-direction: column; height: auto; }
+    .app-shell { flex-direction: column; height: 100%; }
     
-    .editor-panel { width: 100%; border-right: none; height: auto; }
+    /* پنل ادیتور */
+    .editor-panel { 
+        width: 100%; 
+        border-right: none; 
+        height: calc(100vh - 60px); /* ارتفاع منهای نوار پایین */
+        overflow-y: auto;
+        padding-bottom: 80px;
+    }
+
+    /* پنل پیش‌نمایش */
     .preview-panel { 
         width: 100%; 
-        padding: 20px 10px; 
-        height: auto; 
+        height: calc(100vh - 60px);
         background: #525659;
-        display: none; /* Hide preview by default in mobile */
+        display: none; 
+        /* حذف پدینگ برای استفاده حداکثری از فضا */
+        padding: 0; 
+        padding-top: 60px; /* جا برای نوار قالب بالا */
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: relative;
     }
     
-    #resumePreview { transform: scale(0.95); margin: 0 auto; }
+    /* نوار قالب افقی در بالای پرویو */
+    .mobile-template-bar {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 10px;
+        background: white;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 50;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        /* مخفی کردن اسکرول‌بار زشت */
+        scrollbar-width: none; 
+    }
+    .mobile-template-bar::-webkit-scrollbar { display: none; }
+
+    .mt-opt {
+        white-space: nowrap;
+        padding: 6px 15px;
+        background: #f0f0f0;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #555;
+    }
+    .mt-opt.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* تنظیم سایز A4 برای موبایل - تمام صفحه */
+    #resumePreview { 
+        /* مقیاس را بر اساس عرض صفحه تنظیم میکنیم */
+        /* عرض A4 حدود 800 پیکسل است. در موبایل حدود 360 تا 400 پیکسل داریم */
+        /* پس مقیاس 0.45 تا 0.5 مناسب است */
+        transform: scale(0.46); 
+        transform-origin: top center;
+        margin: 10px auto 0 auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
     
-    .mobile-nav { display: flex; } /* Show nav in mobile */
+    .mobile-nav { display: flex; z-index: 100; } 
     
-    /* Active class toggles visibility via JS */
     .editor-panel.active { display: flex; }
     .preview-panel.active { display: flex; }
 }
