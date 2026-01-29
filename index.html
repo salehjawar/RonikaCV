@@ -154,11 +154,16 @@
   <script src="app.js"></script>
 
   <script>
+    // ثبت سرویس ورکر با استراتژی جدید
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(() => console.log('Service Worker Registered'))
-          .catch((err) => console.log('Service Worker Error:', err));
+          .then((reg) => {
+            // چک کردن آپدیت در هر بار لود شدن صفحه
+            reg.update();
+            console.log('SW Registered');
+          })
+          .catch((err) => console.log('SW Error:', err));
       });
     }
   </script>
