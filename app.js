@@ -1,6 +1,6 @@
 const state = {
   lang: 'en',
-  template: 'sky', // پیش فرض روی قالب جدید Sky
+  template: 'modern', // پیش‌فرض: مدرن
   font: "'Open Sans', sans-serif",
   photoBase64: null,
 };
@@ -10,7 +10,7 @@ const labels = {
   ku: { personal: "زانیاری کەسی", exp: "ئەزموونی کار", edu: "خوێندن", skill: "تواناکان", lang_section: "زمانەکان", summary: "پوختە", contact: "پەیوەندی", export: "داگرتنی سی‌وی", photo: "وێنە", font: "جۆری فۆنت" }
 };
 
-// --- UI UPDATES ---
+// UI Functions
 function updateUI() {
   state.lang = document.getElementById('languageSelect').value;
   const t = labels[state.lang];
@@ -35,7 +35,6 @@ function setTemplate(name, el) {
   renderPreview();
 }
 
-// --- MOBILE NAVIGATION SWITCHER ---
 function switchMobileTab(tabName) {
     const editor = document.getElementById('editorTab');
     const preview = document.getElementById('previewTab');
@@ -67,7 +66,7 @@ function handlePhotoUpload(input) {
   }
 }
 
-// --- DATA ITEMS ---
+// Data Management
 function addItem(type) {
   const container = document.getElementById(`${type}Container`);
   const id = Date.now();
@@ -191,7 +190,7 @@ function renderPreview() {
 
   let skillType = 'stars';
   if (state.template === 'modern') skillType = 'bar';
-  if (state.template === 'sky') skillType = 'bar'; // For Sky template
+  if (state.template === 'sky') skillType = 'bar';
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
@@ -217,9 +216,7 @@ function renderPreview() {
       `).join('')}
     </div>` : '';
 
-  // --- TEMPLATE LOGIC ---
-
-  if (state.template === 'sky') { // NEW TEMPLATE
+  if (state.template === 'sky') { 
     html = `
       <div class="template-sky">
         <div class="sidebar">
@@ -228,19 +225,15 @@ function renderPreview() {
           <div class="contact-item"><i class="fas fa-phone"></i> ${data.phone}</div>
           <div class="contact-item"><i class="fas fa-envelope"></i> ${data.email}</div>
           <div class="contact-item"><i class="fas fa-map-marker-alt"></i> ${data.address}</div>
-          
           ${skillsListHTML}
           ${languagesListHTML}
-          
-          ${sectionEdu}
         </div>
         <div class="main">
           <h1>${data.fullName}</h1>
           <h2>${data.jobTitle}</h2>
           ${data.summary ? `<div class="section-title">${t.summary}</div><p>${data.summary}</p>` : ''}
-          
           ${sectionExp}
-        </div>
+          ${sectionEdu} </div>
       </div>`;
   }
   else if (state.template === 'modern') {
@@ -369,7 +362,6 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// ... EXPORT & SAVE FUNCTIONS (Same as before) ...
 function exportPDF() {
   const element = document.getElementById('resumePreview');
   const opt = {
