@@ -1,4 +1,6 @@
-const CACHE_NAME = 'ronika-online-first-v1';
+// تغییر نام کش به v4 (حیاتی برای رفع مشکل رفرش نشدن)
+const CACHE_NAME = 'ronika-fix-v4'; 
+
 const ASSETS = [
   './',
   './index.html',
@@ -9,15 +11,13 @@ const ASSETS = [
   './icon-512.png'
 ];
 
-// هنگام نصب، فایل‌ها را کش کن (فقط برای احتیاط)
 self.addEventListener('install', (e) => {
-  self.skipWaiting();
+  self.skipWaiting(); // اجبار به نصب فوری
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
 });
 
-// پاک کردن کش‌های قدیمی وقتی سرویس ورکر جدید فعال شد
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keyList) => {
@@ -31,21 +31,17 @@ self.addEventListener('activate', (e) => {
   return self.clients.claim();
 });
 
-// استراتژی "اول شبکه" (Network First)
+// استراتژی: اول اینترنت، اگر نبود کش (Network First)
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     fetch(e.request)
       .then((res) => {
-        // اگر اینترنت بود، پاسخ را بگیر و کش را هم آپدیت کن
         const resClone = res.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(e.request, resClone);
         });
         return res;
       })
-      .catch(() => {
-        // اگر اینترنت نبود، از کش استفاده کن
-        return caches.match(e.request);
-      })
+      .catch(() => caches.match(e.request))
   );
 });
