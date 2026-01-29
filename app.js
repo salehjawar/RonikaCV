@@ -1,7 +1,7 @@
 const state = {
   lang: 'en',
-  template: 'modern',
-  font: "'Segoe UI', sans-serif",
+  template: 'sky', // پیش فرض روی قالب جدید Sky
+  font: "'Open Sans', sans-serif",
   photoBase64: null,
 };
 
@@ -10,6 +10,7 @@ const labels = {
   ku: { personal: "زانیاری کەسی", exp: "ئەزموونی کار", edu: "خوێندن", skill: "تواناکان", lang_section: "زمانەکان", summary: "پوختە", contact: "پەیوەندی", export: "داگرتنی سی‌وی", photo: "وێنە", font: "جۆری فۆنت" }
 };
 
+// --- UI UPDATES ---
 function updateUI() {
   state.lang = document.getElementById('languageSelect').value;
   const t = labels[state.lang];
@@ -34,6 +35,26 @@ function setTemplate(name, el) {
   renderPreview();
 }
 
+// --- MOBILE NAVIGATION SWITCHER ---
+function switchMobileTab(tabName) {
+    const editor = document.getElementById('editorTab');
+    const preview = document.getElementById('previewTab');
+    const btnEdit = document.getElementById('navEdit');
+    const btnPreview = document.getElementById('navPreview');
+
+    if (tabName === 'editor') {
+        editor.style.display = 'flex';
+        preview.style.display = 'none';
+        btnEdit.classList.add('active');
+        btnPreview.classList.remove('active');
+    } else {
+        editor.style.display = 'none';
+        preview.style.display = 'flex';
+        btnEdit.classList.remove('active');
+        btnPreview.classList.add('active');
+    }
+}
+
 function toggleSection(id) {
   document.getElementById(id).classList.toggle('open');
 }
@@ -46,6 +67,7 @@ function handlePhotoUpload(input) {
   }
 }
 
+// --- DATA ITEMS ---
 function addItem(type) {
   const container = document.getElementById(`${type}Container`);
   const id = Date.now();
@@ -169,6 +191,7 @@ function renderPreview() {
 
   let skillType = 'stars';
   if (state.template === 'modern') skillType = 'bar';
+  if (state.template === 'sky') skillType = 'bar'; // For Sky template
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
@@ -194,7 +217,33 @@ function renderPreview() {
       `).join('')}
     </div>` : '';
 
-  if (state.template === 'modern') {
+  // --- TEMPLATE LOGIC ---
+
+  if (state.template === 'sky') { // NEW TEMPLATE
+    html = `
+      <div class="template-sky">
+        <div class="sidebar">
+          ${data.photo ? `<img src="${data.photo}" class="photo">` : ''}
+          <div class="section-title">${t.contact}</div>
+          <div class="contact-item"><i class="fas fa-phone"></i> ${data.phone}</div>
+          <div class="contact-item"><i class="fas fa-envelope"></i> ${data.email}</div>
+          <div class="contact-item"><i class="fas fa-map-marker-alt"></i> ${data.address}</div>
+          
+          ${skillsListHTML}
+          ${languagesListHTML}
+          
+          ${sectionEdu}
+        </div>
+        <div class="main">
+          <h1>${data.fullName}</h1>
+          <h2>${data.jobTitle}</h2>
+          ${data.summary ? `<div class="section-title">${t.summary}</div><p>${data.summary}</p>` : ''}
+          
+          ${sectionExp}
+        </div>
+      </div>`;
+  }
+  else if (state.template === 'modern') {
     html = `
       <div class="template-modern">
         <div class="sidebar">
@@ -320,6 +369,7 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
+// ... EXPORT & SAVE FUNCTIONS (Same as before) ...
 function exportPDF() {
   const element = document.getElementById('resumePreview');
   const opt = {
@@ -341,7 +391,6 @@ function exportWord() {
   const data = getData();
   const t = labels[state.lang];
   const isRTL = state.lang === 'ku';
-
   const styles = `body { font-family: sans-serif; }`;
   let content = `
     <html ${isRTL ? 'dir="rtl"' : ''}><head><meta charset="utf-8"><style>${styles}</style></head><body>
@@ -357,7 +406,6 @@ function exportWord() {
       ${data.languages.length ? `<h3>${t.lang_section}</h3>` : ''}
       <ul>${data.languages.map(s => `<li>${s.name} (${s.level}/5)</li>`).join('')}</ul>
     </body></html>`;
-
   const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
@@ -381,30 +429,25 @@ function saveProjectData() {
 function loadProjectData(input) {
   const file = input.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
       populateForm(data);
       alert("Loaded successfully!");
-    } catch (err) {
-      alert("Error loading file.");
-    }
+    } catch (err) { alert("Error loading file."); }
   };
   reader.readAsText(file);
 }
 
 function populateForm(data) {
   if(!data) return;
-  
   document.getElementById('educationContainer').innerHTML = '';
   document.getElementById('experienceContainer').innerHTML = '';
   document.getElementById('skillContainer').innerHTML = '';
   document.getElementById('languageContainer').innerHTML = '';
   
   const safeVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
-  
   safeVal('fullName', data.fullName);
   safeVal('jobTitle', data.jobTitle);
   safeVal('phone', data.phone);
@@ -428,12 +471,10 @@ function populateForm(data) {
           });
       }
   };
-
   addItemsSafe(data.edu, 'education', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]);
   addItemsSafe(data.exp, 'experience', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]);
   addItemsSafe(data.skills, 'skill', [{sel: '.inp-skill', key: 'name'}, {sel: '.inp-level', key: 'level'}]);
   addItemsSafe(data.languages, 'language', [{sel: '.inp-lang', key: 'name'}, {sel: '.inp-level', key: 'level'}]);
-
   renderPreview();
 }
 
