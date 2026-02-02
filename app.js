@@ -366,82 +366,77 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// تابع اکسپورت نهایی (رفع مشکل سفیدی و ناقص بودن)
+// تابع اکسپورت نهایی و تضمینی (Ghost Container Strategy)
 function exportPDF() {
-  const element = document.getElementById('resumePreview');
-  const previewPanel = document.getElementById('previewTab'); // کانتینر اصلی
-  const body = document.body;
-
-  // 1. ذخیره وضعیت فعلی (برای بازگرداندن بعد از چاپ)
-  const state = {
-    panelDisplay: previewPanel.style.display,
-    panelOverflow: previewPanel.style.overflow,
-    panelHeight: previewPanel.style.height,
-    elemTransform: element.style.transform,
-    elemWidth: element.style.width,
-    elemMargin: element.style.margin,
-    bodyOverflow: body.style.overflow
-  };
-
-  // 2. آماده‌سازی برای چاپ (اعمال تنظیمات اجباری)
+  const original = document.getElementById('resumePreview');
   
-  // الف) نمایش پنل پیش‌نمایش (حیاتی برای موبایل که ممکن است مخفی باشد)
-  // html2canvas نمی‌تواند از چیزی که display:none است عکس بگیرد
-  previewPanel.style.display = 'block'; 
+  // 1. کپی گرفتن از رزومه (Deep Clone)
+  const clone = original.cloneNode(true);
+
+  // 2. ساخت یک کانتینر موقت و نامرئی برای عملیات چاپ
+  // ما این کانتینر را خارج از صفحه قرار می‌دهیم تا کاربر نبیند
+  const ghostContainer = document.createElement('div');
   
-  // ب) حذف اسکرول‌بارها (حیاتی برای ویندوز که ناقص نشود)
-  previewPanel.style.overflow = 'visible';
-  previewPanel.style.height = 'auto';
-  body.style.overflow = 'visible'; // اجازه به بادی برای باز شدن
+  // نکته مهم: کلاس preview-panel را به آن می‌دهیم تا استایل‌های CSS کار کنند
+  ghostContainer.className = 'preview-panel'; 
 
-  // ج) تنظیم سایز دقیق A4 و حذف زوم
-  element.style.transform = 'none';
-  element.style.width = '210mm';
-  element.style.minWidth = '210mm'; // قفل کردن عرض
-  element.style.minHeight = '296.8mm'; // قفل کردن ارتفاع
-  element.style.height = 'auto'; 
-  element.style.margin = '0 auto'; // وسط چین کردن برای اطمینان
+  // 3. اعمال تنظیمات اجباری روی کانتینر مخفی
+  Object.assign(ghostContainer.style, {
+    position: 'fixed',
+    top: '-10000px',     // فرستادن به خارج از صفحه
+    left: '-10000px',
+    width: '210mm',      // عرض دقیق A4
+    minHeight: '296.8mm',
+    height: 'auto',
+    zIndex: '-9999',
+    overflow: 'visible', // حذف اسکرول‌بار (حل مشکل ویندوز)
+    display: 'block',    // اجبار به نمایش (حل مشکل موبایل)
+    margin: '0',
+    padding: '0',
+    background: 'white'  // جلوگیری از پس‌زمینه تیره
+  });
 
-  // د) اسکرول به بالا (برای جلوگیری از سیاه شدن بالای صفحه)
-  window.scrollTo(0, 0);
+  // 4. اعمال تنظیمات روی خودِ رزومه کپی شده
+  Object.assign(clone.style, {
+    transform: 'none',   // حذف زوم موبایل
+    margin: '0',
+    width: '210mm',
+    minWidth: '210mm',
+    height: 'auto',
+    minHeight: '296.8mm',
+    boxShadow: 'none'
+  });
 
-  // تنظیمات کتابخانه
+  // 5. قرار دادن کپی داخل کانتینر مخفی و افزودن به بادی
+  ghostContainer.appendChild(clone);
+  document.body.appendChild(ghostContainer);
+
+  // 6. تنظیمات PDF
   const opt = {
     margin:       0,
     filename:     'CV.pdf',
-    image:        { type: 'jpeg', quality: 0.99 }, // کیفیت حداکثر
+    image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { 
-      scale: 2,           // رزولوشن بالا
-      useCORS: true,      // اجازه لود عکس‌ها
-      scrollY: 0,         // شروع از مختصات صفر
-      scrollX: 0,
-      windowWidth: 794,   // عرض استاندارد A4 در وب
+      scale: 2, 
+      useCORS: true, 
+      scrollY: 0,
+      windowWidth: 794 // عرض استاندارد A4
     },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  // 3. تولید PDF و بازگشت به حالت قبل
-  html2pdf().set(opt).from(element).save()
-    .then(() => restoreState())
+  // 7. تولید و دانلود
+  html2pdf().set(opt).from(clone).save()
+    .then(() => {
+      // 8. پاکسازی صحنه جرم!
+      document.body.removeChild(ghostContainer);
+    })
     .catch((err) => {
-      console.error("PDF Error:", err);
-      restoreState();
+      console.error(err);
+      if (document.body.contains(ghostContainer)) {
+        document.body.removeChild(ghostContainer);
+      }
     });
-
-  // تابع بازگرداندن تنظیمات
-  function restoreState() {
-    previewPanel.style.display = state.panelDisplay;
-    previewPanel.style.overflow = state.panelOverflow;
-    previewPanel.style.height = state.panelHeight;
-    element.style.transform = state.elemTransform;
-    element.style.width = state.elemWidth;
-    element.style.margin = state.elemMargin;
-    body.style.overflow = state.bodyOverflow;
-    
-    // اگر در موبایل بودیم و روی تب ادیتور بودیم، اسکرول را برگردان
-    element.style.minWidth = ''; 
-    element.style.minHeight = '296.8mm';
-  }
 }
 
 function exportWord() {
