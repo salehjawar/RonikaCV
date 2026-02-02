@@ -30,8 +30,6 @@ function updateUI() {
 
 function setTemplate(name, el) {
   state.template = name;
-  
-  // سینک کردن دکمه‌ها در موبایل و دسکتاپ
   document.querySelectorAll('.t-opt').forEach(d => {
       d.classList.remove('active');
       if(d.textContent.toLowerCase().includes(name) || d.getAttribute('onclick').includes(name)) {
@@ -42,7 +40,6 @@ function setTemplate(name, el) {
       d.classList.remove('active');
       if(d.dataset.t === name) d.classList.add('active');
   });
-
   if(el && el.classList) el.classList.add('active');
   renderPreview();
 }
@@ -87,7 +84,6 @@ function addItem(type) {
   if (type === 'skill' || type === 'language') {
     const placeholder = type === 'skill' ? (state.lang === 'en' ? 'Skill Name' : 'ناوی توانا') : (state.lang === 'en' ? 'Language' : 'زمان');
     const inputClass = type === 'skill' ? 'inp-skill' : 'inp-lang';
-    
     html = `
       <div class="item-card" id="item-${id}">
         <button class="btn-remove" onclick="removeItem(${id})">X</button>
@@ -106,7 +102,6 @@ function addItem(type) {
     const ph = state.lang === 'en' ? 
       { t: "Title / Degree", o: "Company / Uni", d: "Date", x: "Description" } :
       { t: "ناونیشان / بڕوانامە", o: "کۆمپانیا / زانکۆ", d: "بەروار", x: "تێبینی" };
-      
     html = `
       <div class="item-card" id="item-${id}">
         <button class="btn-remove" onclick="removeItem(${id})">X</button>
@@ -123,17 +118,14 @@ function removeItem(id) { document.getElementById(`item-${id}`).remove(); render
 
 function getData() {
   const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
-  
   const skills = [];
   document.querySelectorAll('#skillContainer .item-card').forEach(div => {
     skills.push({ name: div.querySelector('.inp-skill').value, level: parseInt(div.querySelector('.inp-level').value) });
   });
-
   const languages = [];
   document.querySelectorAll('#languageContainer .item-card').forEach(div => {
     languages.push({ name: div.querySelector('.inp-lang').value, level: parseInt(div.querySelector('.inp-level').value) });
   });
-
   const getItems = (containerId) => {
     const items = [];
     document.querySelectorAll(`#${containerId} .item-card`).forEach(div => {
@@ -146,7 +138,6 @@ function getData() {
     });
     return items;
   };
-
   return {
     fullName: getVal('fullName') || (state.lang === 'ku' ? "ناوی سی‌وی" : "Your Name"),
     jobTitle: getVal('jobTitle') || "Job Title",
@@ -376,39 +367,34 @@ function renderPreview() {
 }
 
 // ==========================================
-//  ROBUST PDF EXPORT FUNCTION (Fixed)
+//  PDF EXPORT: CLONE STRATEGY (100% SAFE)
 // ==========================================
 function exportPDF() {
-  const element = document.getElementById('resumePreview');
-  const previewPanel = document.querySelector('.preview-panel'); // کانتینر اصلی
+  const originalElement = document.getElementById('resumePreview');
+  
+  // 1. کپی گرفتن از رزومه اصلی
+  // با این کار رزومه اصلی دست نخورده می‌ماند (خراب نمی‌شود)
+  const clonedElement = originalElement.cloneNode(true);
 
-  // 1. ذخیره حالت‌های قبلی (برای اینکه بعد از اکسپورت خرابکاری نشود)
-  const originalState = {
-    panelOverflow: previewPanel.style.overflow,
-    panelHeight: previewPanel.style.height,
-    elemWidth: element.style.width,
-    elemMinWidth: element.style.minWidth,
-    elemTransform: element.style.transform,
-    elemMargin: element.style.margin,
-    elemHeight: element.style.height
-  };
+  // 2. تنظیم استایل‌های کپی برای چاپ دقیق
+  // این استایل‌ها فقط روی نسخه کپی اعمال می‌شوند نه روی صفحه اصلی
+  clonedElement.style.position = 'fixed';
+  clonedElement.style.top = '0';
+  clonedElement.style.left = '0';
+  clonedElement.style.width = '210mm';  // عرض دقیق A4
+  clonedElement.style.minHeight = '296.8mm'; // ارتفاع A4
+  clonedElement.style.height = 'auto';
+  clonedElement.style.margin = '0';
+  clonedElement.style.padding = '0';
+  clonedElement.style.transform = 'none'; // حذف زوم موبایل
+  clonedElement.style.zIndex = '-9999'; // مخفی کردن پشت صفحه
+  clonedElement.style.overflow = 'hidden';
+  clonedElement.classList.remove('mobile-preview'); // حذف کلاس‌های موبایل اگر باشد
 
-  // 2. تنظیمات موقت برای اکسپورت صحیح
-  // الف) حذف زوم موبایل و تنظیم سایز دقیق A4
-  element.style.transform = 'none';
-  element.style.width = '210mm';
-  element.style.minWidth = '210mm';
-  element.style.height = '296.8mm'; // قفل ارتفاع برای جلوگیری از صفحه سفید
-  element.style.margin = '0 auto';
+  // 3. چسباندن کپی به بدنه اصلی (برای اینکه html2pdf بتواند آن را ببیند)
+  document.body.appendChild(clonedElement);
 
-  // ب) باز کردن کانتینرهای اسکرول‌دار (حیاتی برای ویندوز)
-  // این خط باعث می‌شود html2canvas بتواند تمام محتوای طولانی را ببیند
-  previewPanel.style.overflow = 'visible'; 
-  previewPanel.style.height = 'auto'; 
-
-  // ج) اسکرول به بالا برای جلوگیری از بریدگی
-  window.scrollTo(0, 0);
-
+  // تنظیمات
   const opt = {
     margin:       0,
     filename:     'CV.pdf',
@@ -417,31 +403,15 @@ function exportPDF() {
       scale: 2, 
       useCORS: true, 
       scrollY: 0,
-      windowWidth: 794 // شبیه‌سازی عرض استاندارد دسکتاپ
+      windowWidth: 794 // عرض استاندارد A4 در پیکسل
     },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  html2pdf().set(opt).from(element).save()
-    .then(() => {
-      restoreState();
-    })
-    .catch((err) => {
-      console.error(err);
-      restoreState();
-    });
-
-  // تابع بازگرداندن به حالت اولیه
-  function restoreState() {
-    previewPanel.style.overflow = originalState.panelOverflow;
-    previewPanel.style.height = originalState.panelHeight;
-    
-    element.style.width = originalState.elemWidth;
-    element.style.minWidth = originalState.elemMinWidth;
-    element.style.transform = originalState.elemTransform;
-    element.style.margin = originalState.elemMargin;
-    element.style.height = originalState.elemHeight;
-  }
+  // 4. تبدیل کپی به PDF و سپس حذف آن
+  html2pdf().set(opt).from(clonedElement).save().then(() => {
+    document.body.removeChild(clonedElement); // پاکسازی
+  });
 }
 
 function exportWord() {
@@ -503,7 +473,6 @@ function populateForm(data) {
   document.getElementById('experienceContainer').innerHTML = '';
   document.getElementById('skillContainer').innerHTML = '';
   document.getElementById('languageContainer').innerHTML = '';
-  
   const safeVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
   safeVal('fullName', data.fullName);
   safeVal('jobTitle', data.jobTitle);
@@ -512,7 +481,6 @@ function populateForm(data) {
   safeVal('address', data.address);
   safeVal('summary', data.summary);
   if (data.photo) state.photoBase64 = data.photo;
-
   const addItemsSafe = (arr, type, fields) => {
       if(arr && Array.isArray(arr)) {
           arr.forEach(item => {
