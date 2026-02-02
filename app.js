@@ -382,46 +382,74 @@ function renderPreview() {
 function exportPDF() {
   const element = document.getElementById('resumePreview');
   
-  // 1. ذخیره استایل‌های فعلی
-  const originalTransform = element.style.transform;
-  const originalWidth = element.style.width;
-  const originalMinWidth = element.style.minWidth;
-  const originalHeight = element.style.height;
-  
-  // 2. تنظیم موقت برای اکسپورت صحیح (استاندارد A4)
-  // حذف زوم موبایل
-  element.style.transform = 'none';
-  // عرض را دقیقا 210 میلیمتر میکنیم تا در ویندوز کش نیاید
-  element.style.width = '210mm'; 
-  element.style.minWidth = '210mm';
-  // ارتفاع را فیکس میکنیم تا صفحه سفید ساخته نشود
-  element.style.height = '296.8mm'; 
-  element.style.margin = '0 auto';
-  
-  document.body.style.overflow = 'hidden';
+  // ذخیره استایل‌های قبلی برای بازگرداندن بعد از عکس‌برداری
+  const originalStyle = element.getAttribute('style');
+  const originalParent = element.parentNode;
+  const nextSibling = element.nextSibling; // برای اینکه دقیقاً سر جای قبلی برگردد
 
+  // === مرحله ۱: تنظیمات ایزوله برای عکس‌برداری دقیق ===
+  // المنت را به بدنه اصلی می‌چسبانیم تا هیچ مارجین یا پدینگ پدر روش اثر نگذارد
+  document.body.appendChild(element);
+
+  // تنظیمات اجباری: چسبیدن به بالا سمت چپ، حذف زوم، سایز دقیق A4
+  element.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 210mm;
+    min-width: 210mm;
+    height: 296.8mm;
+    min-height: 296.8mm;
+    margin: 0;
+    padding: 0;
+    transform: none;
+    z-index: 99999;
+    background: white;
+    overflow: hidden;
+  `;
+
+  // تنظیمات html2pdf
   const opt = {
     margin:       0,
     filename:     'CV.pdf',
     image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { 
-      scale: 2, 
-      useCORS: true, 
-      scrollY: 0,
-      windowWidth: 794 // عرض استاندارد A4 در پیکسل (96 DPI)
+      scale: 2,       // کیفیت بالا
+      useCORS: true,  // لود عکس‌ها
+      scrollY: 0,     // اسکرول صفر
+      scrollX: 0,
+      windowWidth: 794, // عرض استاندارد
+      windowHeight: 1123
     },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  html2pdf().set(opt).from(element).save().then(() => {
-    // 3. بازگرداندن به حالت قبلی (موبایل یا دسکتاپ)
-    element.style.transform = originalTransform;
-    element.style.width = originalWidth;
-    element.style.minWidth = originalMinWidth;
-    element.style.height = originalHeight;
-    element.style.margin = '';
-    document.body.style.overflow = '';
-  });
+  // === مرحله ۲: تولید PDF و بازگرداندن حالت قبل ===
+  html2pdf().set(opt).from(element).save()
+    .then(() => {
+      restoreState();
+    })
+    .catch((err) => {
+      console.error(err);
+      restoreState(); // حتی اگر ارور داد هم برگرداند
+    });
+
+  // تابع بازگرداندن به حالت اولیه
+  function restoreState() {
+    // حذف استایل‌های موقت و برگرداندن استایل‌های قبلی (مثل زوم موبایل)
+    if (originalStyle) {
+        element.setAttribute('style', originalStyle);
+    } else {
+        element.removeAttribute('style');
+    }
+
+    // بازگرداندن المنت به جایگاه اصلی (داخل preview-panel)
+    if (nextSibling) {
+        originalParent.insertBefore(element, nextSibling);
+    } else {
+        originalParent.appendChild(element);
+    }
+  }
 }
 
 function exportWord() {
