@@ -5,7 +5,7 @@
   --bg: #f3f4f6;
   --sidebar-w: 380px;
   --a4-w: 210mm;
-  --a4-h: 296mm; /* ارتفاع فیکس A4 */
+  --a4-h: 296.8mm; /* ارتفاع دقیق */
   
   --sky-blue: #0891b2;
   --sky-gray: #f0f2f5;
@@ -53,19 +53,20 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .btn-remove { position: absolute; top: 5px; right: 5px; background: #ffebee; color: red; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; border-radius: 3px; }
 .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 5px; }
 
-/* ===== PREVIEW PANEL ===== */
+/* ===== PREVIEW PANEL (DESKTOP) ===== */
 .preview-panel {
   flex: 1;
   background: #525659;
   padding: 40px;
-  overflow: auto;
+  overflow: auto; /* اسکرول اگر صفحه کوچک بود */
   display: flex;
   justify-content: center;
 }
 
 #resumePreview {
   width: var(--a4-w);
-  /* ارتفاع فیکس برای جلوگیری از صفحه سفید */
+  /* نکته مهم برای ویندوز: عرض نباید کمتر از A4 شود */
+  min-width: var(--a4-w); 
   height: var(--a4-h); 
   min-height: var(--a4-h);
   max-height: var(--a4-h);
@@ -88,8 +89,8 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .item-sub { font-size: 13px; color: #666; font-style: italic; }
 .item-desc { font-size: 13px; margin-top: 3px; text-align: justify; line-height: 1.4; color: #444; }
 
-/* TEMPLATES (ALL SAME AS BEFORE - Shortened for brevity, keep your templates) */
-/* SKY TEMPLATE */
+/* --- TEMPLATES --- */
+/* (همان کدهای قبلی قالب‌ها بدون تغییر) */
 .template-sky { display: flex; height: 100%; background: linear-gradient(to right, var(--sky-gray) 35%, white 35%); }
 .template-sky .sidebar { width: 35%; padding: 30px 20px; color: #333; height: 100%; }
 .template-sky .main { width: 65%; padding: 40px 30px; color: #333; height: 100%; }
@@ -169,7 +170,7 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
 .template-compact .cols { display: grid; grid-template-columns: 65% 35%; gap: 25px; }
 .template-compact .section-title { font-size: 14px; font-weight: bold; color: #fff; background: #2980b9; padding: 3px 8px; margin: 15px 0 10px 0; border-radius: 3px; text-transform: uppercase; }
 
-/* ===== MOBILE RESPONSIVENESS (THE FIX) ===== */
+/* ===== MOBILE RESPONSIVENESS ===== */
 .mobile-template-bar { display: none; }
 .mobile-nav { display: none; }
 
@@ -186,10 +187,10 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
     .preview-panel { 
         width: 100%; height: calc(100vh - 60px);
         background: #525659;
-        display: none; padding: 0; padding-top: 70px; /* Space for top bar */
-        overflow: hidden; /* Hide scrollbars, we use transform */
+        display: none; padding: 0; padding-top: 70px;
+        overflow: hidden; 
         position: relative;
-        align-items: flex-start; /* Start from top */
+        align-items: flex-start; 
         justify-content: center;
     }
     .preview-panel.active { display: flex; }
@@ -201,18 +202,13 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
         scrollbar-width: none; 
     }
     
-    /* A4 FIX FOR MOBILE:
-       Force width to 210mm (real A4 size).
-       Scale it down to fit the mobile screen.
-    */
     #resumePreview { 
         width: 210mm !important;
-        min-width: 210mm !important;
-        /* محاسبه مقیاس: عرض گوشی (حدود 360) تقسیم بر عرض A4 (حدود 794) = ~0.45 */
+        /* این خط برای موبایل است ولی با CSS دسکتاپ فرق دارد */
+        min-width: 210mm !important; 
         transform: scale(0.45); 
         transform-origin: top center;
         margin-top: 10px;
-        /* برای اینکه وسط قرار بگیرد چون عرضش از عرض گوشی بیشتر است */
         margin-left: auto;
         margin-right: auto;
     }
@@ -238,7 +234,7 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
     min-width: 0 !important;
     min-height: 0 !important; 
     height: auto !important; 
-    transform: none !important; /* حذف زوم موبایل در پرینت */
+    transform: none !important; 
   }
   
   .template-modern, .template-bold, .template-sky { min-height: 0 !important; height: auto !important; }
