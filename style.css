@@ -45,7 +45,8 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 /* Helpers */
 .skill-bar-container { background: #eee; height: 6px; width: 100%; border-radius: 3px; margin-top: 5px; overflow: hidden; }
 .skill-bar-fill { height: 100%; background: var(--accent); }
-.stars { color: #f1c40f; letter-spacing: 2px; }
+/* STARS STYLE - ATTRACTIVE GOLD */
+.stars { color: #f1c40f; letter-spacing: 2px; font-size: 16px; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
 .dots { display: flex; gap: 3px; }
 .dot { width: 10px; height: 10px; border-radius: 50%; background: #eee; }
 .dot.filled { background: var(--accent); }
@@ -64,13 +65,13 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .template-sky h2 { font-size: 14px; text-transform: uppercase; color: #666; margin-top: 5px; border-bottom: 1px solid #ddd; padding-bottom: 20px; margin-bottom: 20px;}
 .template-sky .section-title { font-size: 16px; font-weight: 700; text-transform: uppercase; color: var(--sky-blue); margin: 25px 0 15px 0; }
 .template-sky .sidebar .section-title { color: var(--sky-blue); border-bottom: none; }
-.template-sky .contact-item { font-size: 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: #444; }
-.template-sky .contact-item i { color: var(--sky-blue); width: 15px; }
+.template-sky .contact-item { font-size: 13px; display: flex; flex-direction:column; align-items: flex-start; margin-bottom: 15px; color: #444; } /* Changed for text titles */
+.template-sky .contact-item i { color: var(--sky-blue); width: 15px; margin-bottom:3px; }
 .template-sky .main .item { border-left: 2px solid var(--sky-blue); padding-left: 15px; margin-left: 5px; }
 body.rtl .template-sky { flex-direction: row-reverse; background: linear-gradient(to left, var(--sky-gray) 30%, white 30%); text-align: right; }
 body.rtl .template-sky .main .item { border-left: none; border-right: 2px solid var(--sky-blue); padding-left: 0; padding-right: 15px; }
 
-/* MODERN (Same structure) */
+/* MODERN */
 .template-modern { display: flex; height: 100%; background: linear-gradient(to right, #2c3e50 30%, white 30%); }
 .template-modern .sidebar { width: 30%; background: transparent; color: white; padding: 30px 20px; text-align: center; }
 .template-modern .main { width: 70%; padding: 40px 30px; color: #333; }
@@ -79,6 +80,7 @@ body.rtl .template-sky .main .item { border-left: none; border-right: 2px solid 
 .template-modern h2 { font-size: 16px; font-weight: 500; color: var(--accent); margin-top: 5px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
 .template-modern .section-title { font-size: 16px; font-weight: 800; border-bottom: 2px solid #e0e0e0; margin: 30px 0 15px 0; color: #2c3e50; text-transform: uppercase; }
 .template-modern .sidebar .section-title { border-color: rgba(255,255,255,0.2); color: white; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.template-modern .contact-item { font-size: 13px; margin-bottom: 15px; line-height: 1.5; } /* Spacing for text titles */
 body.rtl .template-modern { flex-direction: row-reverse; background: linear-gradient(to left, #2c3e50 30%, white 30%); }
 
 /* MOBILE */
