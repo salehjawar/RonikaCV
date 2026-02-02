@@ -87,6 +87,15 @@
             <div class="form-group"><input type="text" id="phone" placeholder="Phone" oninput="renderPreview()"></div>
             <div class="form-group"><input type="text" id="email" placeholder="Email" oninput="renderPreview()"></div>
             <div class="form-group"><input type="text" id="address" placeholder="Address" oninput="renderPreview()"></div>
+            
+            <div class="form-group" style="display:flex; gap:5px;">
+                <input type="text" id="dob" placeholder="Date of Birth" oninput="renderPreview()" style="flex:1">
+                <input type="text" id="marital" placeholder="Marital Status" oninput="renderPreview()" style="flex:1">
+            </div>
+            <div class="form-group">
+                <input type="text" id="tribe" placeholder="Tribe / عەشیرەت" oninput="renderPreview()">
+            </div>
+
             <div class="form-group">
                 <label id="lblPhoto">Photo</label>
                 <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)">
@@ -132,7 +141,6 @@
     </div>
 
     <div class="preview-panel" id="previewTab">
-      
       <div class="mobile-template-bar">
         <div class="mt-opt" onclick="setTemplate('sky', this)" data-t="sky">Sky</div>
         <div class="mt-opt active" onclick="setTemplate('modern', this)" data-t="modern">Modern</div>
@@ -141,10 +149,7 @@
         <div class="mt-opt" onclick="setTemplate('minimal', this)" data-t="minimal">Minimal</div>
         <div class="mt-opt" onclick="setTemplate('bold', this)" data-t="bold">Bold</div>
       </div>
-
-      <div id="resumePreview">
-      </div>
-      
+      <div id="resumePreview"></div>
       <div style="height: 120px; width: 100%;"></div>
     </div>
 
@@ -169,13 +174,12 @@
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then((reg) => {
-            reg.update(); // اجبار به بررسی آپدیت
+            reg.update(); 
             console.log('SW Registered');
           })
           .catch((err) => console.log('SW Error:', err));
       });
     }
   </script>
-  
 </body>
 </html>
