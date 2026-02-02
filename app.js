@@ -385,14 +385,19 @@ function exportPDF() {
   // 1. ذخیره استایل‌های فعلی
   const originalTransform = element.style.transform;
   const originalWidth = element.style.width;
+  const originalMinWidth = element.style.minWidth;
+  const originalHeight = element.style.height;
   
-  // 2. تنظیم موقت برای اکسپورت صحیح (شبیه دسکتاپ)
-  // حذف تمام استایل‌های زوم موبایل
+  // 2. تنظیم موقت برای اکسپورت صحیح (استاندارد A4)
+  // حذف زوم موبایل
   element.style.transform = 'none';
-  element.style.width = '100%'; 
-  element.style.margin = '0';
+  // عرض را دقیقا 210 میلیمتر میکنیم تا در ویندوز کش نیاید
+  element.style.width = '210mm'; 
+  element.style.minWidth = '210mm';
+  // ارتفاع را فیکس میکنیم تا صفحه سفید ساخته نشود
+  element.style.height = '296.8mm'; 
+  element.style.margin = '0 auto';
   
-  // برای موبایل: اسکرول صفحه را موقتا قفل میکنیم تا پرش نکند
   document.body.style.overflow = 'hidden';
 
   const opt = {
@@ -403,15 +408,17 @@ function exportPDF() {
       scale: 2, 
       useCORS: true, 
       scrollY: 0,
-      windowWidth: 794 // عرض استاندارد A4 در پیکسل
+      windowWidth: 794 // عرض استاندارد A4 در پیکسل (96 DPI)
     },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
   html2pdf().set(opt).from(element).save().then(() => {
-    // 3. بازگرداندن به حالت موبایل
-    element.style.transform = '';
-    element.style.width = '';
+    // 3. بازگرداندن به حالت قبلی (موبایل یا دسکتاپ)
+    element.style.transform = originalTransform;
+    element.style.width = originalWidth;
+    element.style.minWidth = originalMinWidth;
+    element.style.height = originalHeight;
     element.style.margin = '';
     document.body.style.overflow = '';
   });
