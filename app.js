@@ -366,52 +366,60 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// تابع اکسپورت نهایی و تضمینی (Ghost Container Strategy)
+// ==========================================
+//  ULTIMATE PDF EXPORT (SURGERY METHOD)
+// ==========================================
 function exportPDF() {
-  const original = document.getElementById('resumePreview');
-  
-  // 1. کپی گرفتن از رزومه (Deep Clone)
-  const clone = original.cloneNode(true);
+  const element = document.getElementById('resumePreview');
+  const originalParent = element.parentNode;
+  const nextSibling = element.nextSibling; // نگه داشتن نوبت برای بازگشت
 
-  // 2. ساخت یک کانتینر موقت و نامرئی برای عملیات چاپ
-  // ما این کانتینر را خارج از صفحه قرار می‌دهیم تا کاربر نبیند
-  const ghostContainer = document.createElement('div');
-  
-  // نکته مهم: کلاس preview-panel را به آن می‌دهیم تا استایل‌های CSS کار کنند
-  ghostContainer.className = 'preview-panel'; 
+  // 1. ذخیره استایل‌های اصلی (مخصوصاً برای موبایل که زوم دارد)
+  const originalStyle = {
+    transform: element.style.transform,
+    width: element.style.width,
+    minWidth: element.style.minWidth,
+    height: element.style.height,
+    margin: element.style.margin
+  };
 
-  // 3. اعمال تنظیمات اجباری روی کانتینر مخفی
-  Object.assign(ghostContainer.style, {
+  // 2. ساخت "اتاق عمل" (یک کانتینر موقت روی کل صفحه)
+  // نکته: کلاس 'preview-panel' را می‌دهیم تا استایل‌های CSS رزومه خراب نشود
+  const surgeryContainer = document.createElement('div');
+  surgeryContainer.className = 'preview-panel';
+  
+  // تنظیمات اتاق عمل: تمام صفحه، بدون اسکرول مزاحم، روی همه چیز
+  Object.assign(surgeryContainer.style, {
     position: 'fixed',
-    top: '-10000px',     // فرستادن به خارج از صفحه
-    left: '-10000px',
-    width: '210mm',      // عرض دقیق A4
-    minHeight: '296.8mm',
-    height: 'auto',
-    zIndex: '-9999',
-    overflow: 'visible', // حذف اسکرول‌بار (حل مشکل ویندوز)
-    display: 'block',    // اجبار به نمایش (حل مشکل موبایل)
-    margin: '0',
-    padding: '0',
-    background: 'white'  // جلوگیری از پس‌زمینه تیره
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    zIndex: '999999',
+    overflowY: 'scroll', // اجازه اسکرول داخلی برای html2canvas
+    background: '#525659', // رنگ پس‌زمینه استاندارد
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '0'
   });
 
-  // 4. اعمال تنظیمات روی خودِ رزومه کپی شده
-  Object.assign(clone.style, {
-    transform: 'none',   // حذف زوم موبایل
-    margin: '0',
-    width: '210mm',
+  // 3. انتقال رزومه به اتاق عمل (جراحی شروع شد!)
+  // با این کار رزومه از زیر فشارهای لایه بندی قبلی (ویندوز/موبایل) آزاد می‌شود
+  document.body.appendChild(surgeryContainer);
+  surgeryContainer.appendChild(element);
+
+  // 4. استاندارد سازی رزومه برای چاپ (سایز دقیق A4)
+  Object.assign(element.style, {
+    transform: 'none',       // حذف زوم موبایل
+    width: '210mm',          // عرض دقیق
     minWidth: '210mm',
-    height: 'auto',
-    minHeight: '296.8mm',
+    height: 'auto',          // ارتفاع آزاد برای محتوا
+    minHeight: '296.8mm',    // حداقل ارتفاع A4
+    margin: '0 auto',        // وسط چین
     boxShadow: 'none'
   });
 
-  // 5. قرار دادن کپی داخل کانتینر مخفی و افزودن به بادی
-  ghostContainer.appendChild(clone);
-  document.body.appendChild(ghostContainer);
-
-  // 6. تنظیمات PDF
+  // 5. تنظیمات عکس‌برداری
   const opt = {
     margin:       0,
     filename:     'CV.pdf',
@@ -425,18 +433,33 @@ function exportPDF() {
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  // 7. تولید و دانلود
-  html2pdf().set(opt).from(clone).save()
-    .then(() => {
-      // 8. پاکسازی صحنه جرم!
-      document.body.removeChild(ghostContainer);
-    })
+  // 6. انجام عملیات و بازگشت به حالت اول
+  html2pdf().set(opt).from(element).save()
+    .then(() => restorePatient())
     .catch((err) => {
       console.error(err);
-      if (document.body.contains(ghostContainer)) {
-        document.body.removeChild(ghostContainer);
-      }
+      restorePatient();
     });
+
+  // تابع بازگرداندن بیمار به اتاق خودش!
+  function restorePatient() {
+    // بازگرداندن استایل‌های قبلی
+    element.style.transform = originalStyle.transform;
+    element.style.width = originalStyle.width;
+    element.style.minWidth = originalStyle.minWidth;
+    element.style.height = originalStyle.height;
+    element.style.margin = originalStyle.margin;
+
+    // بازگرداندن المنت به جایگاه اصلی در صفحه
+    if (nextSibling) {
+      originalParent.insertBefore(element, nextSibling);
+    } else {
+      originalParent.appendChild(element);
+    }
+
+    // حذف اتاق عمل
+    document.body.removeChild(surgeryContainer);
+  }
 }
 
 function exportWord() {
