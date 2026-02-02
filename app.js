@@ -1,6 +1,6 @@
 const state = {
   lang: 'en',
-  template: 'modern', // پیش‌فرض: مدرن
+  template: 'modern',
   font: "'Open Sans', sans-serif",
   photoBase64: null,
 };
@@ -10,7 +10,7 @@ const labels = {
   ku: { personal: "زانیاری کەسی", exp: "ئەزموونی کار", edu: "خوێندن", skill: "تواناکان", lang_section: "زمانەکان", summary: "پوختە", contact: "پەیوەندی", export: "داگرتنی سی‌وی", photo: "وێنە", font: "جۆری فۆنت" }
 };
 
-// UI Functions
+// --- UI UPDATES ---
 function updateUI() {
   state.lang = document.getElementById('languageSelect').value;
   const t = labels[state.lang];
@@ -31,24 +31,19 @@ function updateUI() {
 function setTemplate(name, el) {
   state.template = name;
   
-  // آپدیت دکمه‌های پنل ادیتور (دسکتاپ)
+  // سینک کردن دکمه‌ها در موبایل و دسکتاپ
   document.querySelectorAll('.t-opt').forEach(d => {
       d.classList.remove('active');
-      // اگر روی دکمه موبایل کلیک شده، دکمه دسکتاپِ معادلش را پیدا کن و اکتیو کن
       if(d.textContent.toLowerCase().includes(name) || d.getAttribute('onclick').includes(name)) {
           d.classList.add('active');
       }
   });
-
-  // آپدیت دکمه‌های نوار موبایل
   document.querySelectorAll('.mt-opt').forEach(d => {
       d.classList.remove('active');
       if(d.dataset.t === name) d.classList.add('active');
   });
 
-  // اگر خودِ المنت کلیک شده هم کلاسی دارد، هندل شود (برای اطمینان)
   if(el && el.classList) el.classList.add('active');
-
   renderPreview();
 }
 
@@ -83,7 +78,7 @@ function handlePhotoUpload(input) {
   }
 }
 
-// Data Management
+// --- DATA ITEMS ---
 function addItem(type) {
   const container = document.getElementById(`${type}Container`);
   const id = Date.now();
@@ -207,7 +202,7 @@ function renderPreview() {
 
   let skillType = 'stars';
   if (state.template === 'modern') skillType = 'bar';
-  if (state.template === 'sky') skillType = 'bar';
+  if (state.template === 'sky') skillType = 'bar'; 
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
@@ -250,7 +245,8 @@ function renderPreview() {
           <h2>${data.jobTitle}</h2>
           ${data.summary ? `<div class="section-title">${t.summary}</div><p>${data.summary}</p>` : ''}
           ${sectionExp}
-          ${sectionEdu} </div>
+          ${sectionEdu}
+        </div>
       </div>`;
   }
   else if (state.template === 'modern') {
@@ -379,76 +375,72 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
+// ==========================================
+//  ROBUST PDF EXPORT FUNCTION (Fixed)
+// ==========================================
 function exportPDF() {
   const element = document.getElementById('resumePreview');
-  
-  // ذخیره استایل‌های قبلی برای بازگرداندن بعد از عکس‌برداری
-  const originalStyle = element.getAttribute('style');
-  const originalParent = element.parentNode;
-  const nextSibling = element.nextSibling; // برای اینکه دقیقاً سر جای قبلی برگردد
+  const previewPanel = document.querySelector('.preview-panel'); // کانتینر اصلی
 
-  // === مرحله ۱: تنظیمات ایزوله برای عکس‌برداری دقیق ===
-  // المنت را به بدنه اصلی می‌چسبانیم تا هیچ مارجین یا پدینگ پدر روش اثر نگذارد
-  document.body.appendChild(element);
+  // 1. ذخیره حالت‌های قبلی (برای اینکه بعد از اکسپورت خرابکاری نشود)
+  const originalState = {
+    panelOverflow: previewPanel.style.overflow,
+    panelHeight: previewPanel.style.height,
+    elemWidth: element.style.width,
+    elemMinWidth: element.style.minWidth,
+    elemTransform: element.style.transform,
+    elemMargin: element.style.margin,
+    elemHeight: element.style.height
+  };
 
-  // تنظیمات اجباری: چسبیدن به بالا سمت چپ، حذف زوم، سایز دقیق A4
-  element.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 210mm;
-    min-width: 210mm;
-    height: 296.8mm;
-    min-height: 296.8mm;
-    margin: 0;
-    padding: 0;
-    transform: none;
-    z-index: 99999;
-    background: white;
-    overflow: hidden;
-  `;
+  // 2. تنظیمات موقت برای اکسپورت صحیح
+  // الف) حذف زوم موبایل و تنظیم سایز دقیق A4
+  element.style.transform = 'none';
+  element.style.width = '210mm';
+  element.style.minWidth = '210mm';
+  element.style.height = '296.8mm'; // قفل ارتفاع برای جلوگیری از صفحه سفید
+  element.style.margin = '0 auto';
 
-  // تنظیمات html2pdf
+  // ب) باز کردن کانتینرهای اسکرول‌دار (حیاتی برای ویندوز)
+  // این خط باعث می‌شود html2canvas بتواند تمام محتوای طولانی را ببیند
+  previewPanel.style.overflow = 'visible'; 
+  previewPanel.style.height = 'auto'; 
+
+  // ج) اسکرول به بالا برای جلوگیری از بریدگی
+  window.scrollTo(0, 0);
+
   const opt = {
     margin:       0,
     filename:     'CV.pdf',
     image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { 
-      scale: 2,       // کیفیت بالا
-      useCORS: true,  // لود عکس‌ها
-      scrollY: 0,     // اسکرول صفر
-      scrollX: 0,
-      windowWidth: 794, // عرض استاندارد
-      windowHeight: 1123
+      scale: 2, 
+      useCORS: true, 
+      scrollY: 0,
+      windowWidth: 794 // شبیه‌سازی عرض استاندارد دسکتاپ
     },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  // === مرحله ۲: تولید PDF و بازگرداندن حالت قبل ===
   html2pdf().set(opt).from(element).save()
     .then(() => {
       restoreState();
     })
     .catch((err) => {
       console.error(err);
-      restoreState(); // حتی اگر ارور داد هم برگرداند
+      restoreState();
     });
 
   // تابع بازگرداندن به حالت اولیه
   function restoreState() {
-    // حذف استایل‌های موقت و برگرداندن استایل‌های قبلی (مثل زوم موبایل)
-    if (originalStyle) {
-        element.setAttribute('style', originalStyle);
-    } else {
-        element.removeAttribute('style');
-    }
-
-    // بازگرداندن المنت به جایگاه اصلی (داخل preview-panel)
-    if (nextSibling) {
-        originalParent.insertBefore(element, nextSibling);
-    } else {
-        originalParent.appendChild(element);
-    }
+    previewPanel.style.overflow = originalState.panelOverflow;
+    previewPanel.style.height = originalState.panelHeight;
+    
+    element.style.width = originalState.elemWidth;
+    element.style.minWidth = originalState.elemMinWidth;
+    element.style.transform = originalState.elemTransform;
+    element.style.margin = originalState.elemMargin;
+    element.style.height = originalState.elemHeight;
   }
 }
 
