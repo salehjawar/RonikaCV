@@ -366,52 +366,82 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// ==========================================
-//  PDF EXPORT: CLONE STRATEGY (100% SAFE)
-// ==========================================
+// تابع اکسپورت نهایی (رفع مشکل سفیدی و ناقص بودن)
 function exportPDF() {
-  const originalElement = document.getElementById('resumePreview');
+  const element = document.getElementById('resumePreview');
+  const previewPanel = document.getElementById('previewTab'); // کانتینر اصلی
+  const body = document.body;
+
+  // 1. ذخیره وضعیت فعلی (برای بازگرداندن بعد از چاپ)
+  const state = {
+    panelDisplay: previewPanel.style.display,
+    panelOverflow: previewPanel.style.overflow,
+    panelHeight: previewPanel.style.height,
+    elemTransform: element.style.transform,
+    elemWidth: element.style.width,
+    elemMargin: element.style.margin,
+    bodyOverflow: body.style.overflow
+  };
+
+  // 2. آماده‌سازی برای چاپ (اعمال تنظیمات اجباری)
   
-  // 1. کپی گرفتن از رزومه اصلی
-  // با این کار رزومه اصلی دست نخورده می‌ماند (خراب نمی‌شود)
-  const clonedElement = originalElement.cloneNode(true);
+  // الف) نمایش پنل پیش‌نمایش (حیاتی برای موبایل که ممکن است مخفی باشد)
+  // html2canvas نمی‌تواند از چیزی که display:none است عکس بگیرد
+  previewPanel.style.display = 'block'; 
+  
+  // ب) حذف اسکرول‌بارها (حیاتی برای ویندوز که ناقص نشود)
+  previewPanel.style.overflow = 'visible';
+  previewPanel.style.height = 'auto';
+  body.style.overflow = 'visible'; // اجازه به بادی برای باز شدن
 
-  // 2. تنظیم استایل‌های کپی برای چاپ دقیق
-  // این استایل‌ها فقط روی نسخه کپی اعمال می‌شوند نه روی صفحه اصلی
-  clonedElement.style.position = 'fixed';
-  clonedElement.style.top = '0';
-  clonedElement.style.left = '0';
-  clonedElement.style.width = '210mm';  // عرض دقیق A4
-  clonedElement.style.minHeight = '296.8mm'; // ارتفاع A4
-  clonedElement.style.height = 'auto';
-  clonedElement.style.margin = '0';
-  clonedElement.style.padding = '0';
-  clonedElement.style.transform = 'none'; // حذف زوم موبایل
-  clonedElement.style.zIndex = '-9999'; // مخفی کردن پشت صفحه
-  clonedElement.style.overflow = 'hidden';
-  clonedElement.classList.remove('mobile-preview'); // حذف کلاس‌های موبایل اگر باشد
+  // ج) تنظیم سایز دقیق A4 و حذف زوم
+  element.style.transform = 'none';
+  element.style.width = '210mm';
+  element.style.minWidth = '210mm'; // قفل کردن عرض
+  element.style.minHeight = '296.8mm'; // قفل کردن ارتفاع
+  element.style.height = 'auto'; 
+  element.style.margin = '0 auto'; // وسط چین کردن برای اطمینان
 
-  // 3. چسباندن کپی به بدنه اصلی (برای اینکه html2pdf بتواند آن را ببیند)
-  document.body.appendChild(clonedElement);
+  // د) اسکرول به بالا (برای جلوگیری از سیاه شدن بالای صفحه)
+  window.scrollTo(0, 0);
 
-  // تنظیمات
+  // تنظیمات کتابخانه
   const opt = {
     margin:       0,
     filename:     'CV.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
+    image:        { type: 'jpeg', quality: 0.99 }, // کیفیت حداکثر
     html2canvas:  { 
-      scale: 2, 
-      useCORS: true, 
-      scrollY: 0,
-      windowWidth: 794 // عرض استاندارد A4 در پیکسل
+      scale: 2,           // رزولوشن بالا
+      useCORS: true,      // اجازه لود عکس‌ها
+      scrollY: 0,         // شروع از مختصات صفر
+      scrollX: 0,
+      windowWidth: 794,   // عرض استاندارد A4 در وب
     },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  // 4. تبدیل کپی به PDF و سپس حذف آن
-  html2pdf().set(opt).from(clonedElement).save().then(() => {
-    document.body.removeChild(clonedElement); // پاکسازی
-  });
+  // 3. تولید PDF و بازگشت به حالت قبل
+  html2pdf().set(opt).from(element).save()
+    .then(() => restoreState())
+    .catch((err) => {
+      console.error("PDF Error:", err);
+      restoreState();
+    });
+
+  // تابع بازگرداندن تنظیمات
+  function restoreState() {
+    previewPanel.style.display = state.panelDisplay;
+    previewPanel.style.overflow = state.panelOverflow;
+    previewPanel.style.height = state.panelHeight;
+    element.style.transform = state.elemTransform;
+    element.style.width = state.elemWidth;
+    element.style.margin = state.elemMargin;
+    body.style.overflow = state.bodyOverflow;
+    
+    // اگر در موبایل بودیم و روی تب ادیتور بودیم، اسکرول را برگردان
+    element.style.minWidth = ''; 
+    element.style.minHeight = '296.8mm';
+  }
 }
 
 function exportWord() {
