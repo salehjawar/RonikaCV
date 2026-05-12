@@ -164,19 +164,19 @@ function renderPreview() {
   const sectionEdu = renderItems(data.edu, state.lang === 'en' ? "Education" : "خوێندن");
   const sectionExp = renderItems(data.exp, state.lang === 'en' ? "Experience" : "ئەزموونی کار");
 
-  // Visual Style: Using Stars for most, or custom per template
   let skillType = 'stars'; 
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // --- SKILLS & LANGUAGES HTML (Main Column Grid) ---
+  // --- SKILLS & LANGUAGES HTML ---
+  // توجه: از text-align: end استفاده شد تا در انگلیسی سمت راست و در کوردی سمت چپ برود
   const skillsListHTML = data.skills.length ? `
     <div class="section-title">${t.skill}</div>
     <div class="main-skills-grid">
       ${data.skills.map(s => `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:10px;">
           <span style="font-weight:bold; min-width:100px;">${s.name}</span>
-          <div style="flex:1; text-align:right;">${renderSkillVisuals(s.level, skillType)}</div>
+          <div style="flex:1; text-align:end;">${renderSkillVisuals(s.level, skillType)}</div>
         </div>
       `).join('')}
     </div>` : '';
@@ -187,12 +187,12 @@ function renderPreview() {
       ${data.languages.map(s => `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:10px;">
           <span style="font-weight:bold; min-width:100px;">${s.name}</span>
-          <div style="flex:1; text-align:right;">${renderSkillVisuals(s.level, skillType)}</div>
+          <div style="flex:1; text-align:end;">${renderSkillVisuals(s.level, skillType)}</div>
         </div>
       `).join('')}
     </div>` : '';
 
-  // --- HELPER: Sidebar Details (For templates with Sidebar) ---
+  // --- HELPER: Sidebar Details ---
   const getSidebarDetails = (darkTheme = false) => `
     <div class="contact-section">
       <div class="section-title" style="margin-top:0; ${darkTheme ? 'color:white; border-color:rgba(255,255,255,0.2);' : ''}">${t.contact}</div>
@@ -208,7 +208,7 @@ function renderPreview() {
     </div>
   `;
 
-  // --- HELPER: Header Details (For templates without Sidebar) ---
+  // --- HELPER: Header Details ---
   const getHeaderDetails = () => `
     <div class="contact-row">
       ${data.phone ? `<span>${data.phone}</span>` : ''}
@@ -222,8 +222,7 @@ function renderPreview() {
     </div>
   `;
 
-  // --- TEMPLATE GENERATION ---
-
+  // --- TEMPLATES ---
   if (state.template === 'sky') { 
     html = `
       <div class="template-sky">
@@ -336,7 +335,8 @@ function renderPreview() {
         </header>
         <div class="content">
             <div class="left-col">
-                ${getSidebarDetails()} </div>
+                ${getSidebarDetails(true)} 
+            </div>
             <div class="right-col">
                 ${data.summary ? `<div class="section-title">${t.summary}</div><p>${data.summary}</p>` : ''}
                 ${sectionEdu}
@@ -357,7 +357,7 @@ function renderPreview() {
                 <h1>${data.fullName}</h1>
                 <div style="color:#666;">${data.jobTitle}</div>
             </div>
-            <div style="text-align:right; font-size:11px;">
+            <div style="text-align:end; font-size:11px;">
                 <div>${data.phone}</div>
                 <div>${data.email}</div>
                 <div>${data.address}</div>
@@ -384,7 +384,7 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// --- DUAL EXPORT STRATEGY (Correct) ---
+// --- DUAL STRATEGY EXPORT (WINDOWS & MOBILE) ---
 function exportPDF() {
   if (window.innerWidth >= 1024) {
     const element = document.getElementById('resumePreview');
@@ -392,8 +392,19 @@ function exportPDF() {
     element.style.width = '210mm'; 
     element.style.minHeight = '296.8mm';
     element.style.height = 'auto';
-    const opt = { margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-    html2pdf().set(opt).from(element).save().then(() => { element.style.width = originalWidth; });
+
+    const opt = {
+      margin: 0,
+      filename: 'CV.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.style.width = originalWidth;
+    });
+
   } else {
     exportPDFMobile();
   }
@@ -403,17 +414,35 @@ function exportPDFMobile() {
   const original = document.getElementById('resumePreview');
   const clone = original.cloneNode(true);
   const overlay = document.createElement('div');
-  Object.assign(overlay.style, { position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh', zIndex: '999999', background: '#525659', overflow: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '0' });
-  Object.assign(clone.style, { width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm', transform: 'none', margin: '0', boxShadow: 'none', background: 'white' });
+  
+  Object.assign(overlay.style, {
+    position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+    zIndex: '999999', background: '#525659', overflow: 'auto',
+    display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '0'
+  });
+
+  Object.assign(clone.style, {
+    width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm',
+    transform: 'none', margin: '0', boxShadow: 'none', background: 'white'
+  });
   clone.classList.remove('mobile-preview');
+
   overlay.appendChild(clone);
   document.body.appendChild(overlay);
   window.scrollTo(0, 0);
-  const opt = { margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, windowWidth: 794 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-  html2pdf().set(opt).from(clone).save().then(() => { document.body.removeChild(overlay); }).catch((err) => { if(document.body.contains(overlay)) document.body.removeChild(overlay); });
+
+  const opt = {
+    margin: 0, filename: 'CV.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, windowWidth: 794 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  html2pdf().set(opt).from(clone).save().then(() => { document.body.removeChild(overlay); })
+    .catch((err) => { if(document.body.contains(overlay)) document.body.removeChild(overlay); });
 }
 
-function exportWord() { /* ... (Same as before) ... */ 
+function exportWord() { 
   const data = getData(); const t = labels[state.lang]; const isRTL = state.lang === 'ku'; const styles = `body { font-family: sans-serif; }`;
   let content = `<html ${isRTL ? 'dir="rtl"' : ''}><head><meta charset="utf-8"><style>${styles}</style></head><body><h1>${data.fullName}</h1><p>${data.jobTitle}<br>${data.phone} | ${data.email}</p>${data.summary ? `<h3>${t.summary}</h3><p>${data.summary}</p>` : ''}${data.edu.length ? `<h3>${t.edu}</h3>` : ''}${data.edu.map(i => `<p><b>${i.title}</b>, ${i.org}<br>${i.date}<br>${i.desc}</p>`).join('')}${data.exp.length ? `<h3>${t.exp}</h3>` : ''}${data.exp.map(i => `<p><b>${i.title}</b>, ${i.org}<br>${i.date}<br>${i.desc}</p>`).join('')}${data.skills.length ? `<h3>${t.skill}</h3>` : ''}<ul>${data.skills.map(s => `<li>${s.name} (${s.level}/5)</li>`).join('')}</ul></body></html>`;
   const blob = new Blob(['\ufeff', content], { type: 'application/msword' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `CV-${data.fullName}.doc`; link.click();
