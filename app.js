@@ -83,17 +83,51 @@ function handlePhotoUpload(input) {
   }
 }
 
+// --- اصلاح شده: اضافه شدن هدر (نشانگر) به کادرها ---
 function addItem(type) {
   const container = document.getElementById(`${type}Container`);
   const id = Date.now();
   let html = '';
+  
+  // تعیین آیکون و متن نشانگر بر اساس نوع کادر و زبان انتخاب شده
+  let badgeIcon = '';
+  let badgeText = '';
+  if (type === 'education') { badgeIcon = 'fas fa-graduation-cap'; badgeText = state.lang === 'en' ? 'Education' : 'خوێندن'; }
+  if (type === 'experience') { badgeIcon = 'fas fa-briefcase'; badgeText = state.lang === 'en' ? 'Experience' : 'ئەزموونی کار'; }
+  if (type === 'skill') { badgeIcon = 'fas fa-star'; badgeText = state.lang === 'en' ? 'Skill' : 'توانا'; }
+  if (type === 'language') { badgeIcon = 'fas fa-language'; badgeText = state.lang === 'en' ? 'Language' : 'زمان'; }
+
+  const badgeHTML = `<div class="item-badge"><i class="${badgeIcon}"></i> ${badgeText}</div>`;
+
   if (type === 'skill' || type === 'language') {
     const placeholder = type === 'skill' ? (state.lang === 'en' ? 'Skill Name' : 'ناوی توانا') : (state.lang === 'en' ? 'Language' : 'زمان');
     const inputClass = type === 'skill' ? 'inp-skill' : 'inp-lang';
-    html = `<div class="item-card" id="item-${id}"><button class="btn-remove" onclick="removeItem(${id})">X</button><div style="display:flex; gap:5px;"><input type="text" class="${inputClass}" placeholder="${placeholder}" oninput="renderPreview()" style="flex:2"><select class="inp-level" onchange="renderPreview()" style="flex:1"><option value="5">5/5</option><option value="4">4/5</option><option value="3">3/5</option><option value="2">2/5</option><option value="1">1/5</option></select></div></div>`;
+    html = `
+      <div class="item-card" id="item-${id}">
+        ${badgeHTML}
+        <button class="btn-remove" onclick="removeItem(${id})">X</button>
+        <div style="display:flex; gap:5px;">
+          <input type="text" class="${inputClass}" placeholder="${placeholder}" oninput="renderPreview()" style="flex:2">
+          <select class="inp-level" onchange="renderPreview()" style="flex:1">
+            <option value="5">5/5</option>
+            <option value="4">4/5</option>
+            <option value="3">3/5</option>
+            <option value="2">2/5</option>
+            <option value="1">1/5</option>
+          </select>
+        </div>
+      </div>`;
   } else {
     const ph = state.lang === 'en' ? { t: "Title / Degree", o: "Company / Uni", d: "Date", x: "Description" } : { t: "ناونیشان / بڕوانامە", o: "کۆمپانیا / زانکۆ", d: "بەروار", x: "تێبینی" };
-    html = `<div class="item-card" id="item-${id}"><button class="btn-remove" onclick="removeItem(${id})">X</button><div class="form-group"><input type="text" class="inp-title" placeholder="${ph.t}" oninput="renderPreview()"></div><div class="form-group"><input type="text" class="inp-org" placeholder="${ph.o}" oninput="renderPreview()"></div><div class="form-group"><input type="text" class="inp-date" placeholder="${ph.d}" oninput="renderPreview()"></div><div class="form-group"><textarea class="inp-desc" placeholder="${ph.x}" rows="2" oninput="renderPreview()"></textarea></div></div>`;
+    html = `
+      <div class="item-card" id="item-${id}">
+        ${badgeHTML}
+        <button class="btn-remove" onclick="removeItem(${id})">X</button>
+        <div class="form-group"><input type="text" class="inp-title" placeholder="${ph.t}" oninput="renderPreview()"></div>
+        <div class="form-group"><input type="text" class="inp-org" placeholder="${ph.o}" oninput="renderPreview()"></div>
+        <div class="form-group"><input type="text" class="inp-date" placeholder="${ph.d}" oninput="renderPreview()"></div>
+        <div class="form-group"><textarea class="inp-desc" placeholder="${ph.x}" rows="2" oninput="renderPreview()"></textarea></div>
+      </div>`;
   }
   container.insertAdjacentHTML('beforeend', html);
 }
@@ -143,7 +177,6 @@ function getData() {
 function renderSkillVisuals(level, type) {
   if (type === 'bar') return `<div class="skill-bar-container"><div class="skill-bar-fill" style="width:${level*20}%"></div></div>`;
   if (type === 'dots') { let dots = ''; for(let i=0; i<5; i++) dots += `<div class="dot ${i<level?'filled':''}"></div>`; return `<div class="dots">${dots}</div>`; }
-  // Stars (Default)
   let stars = ''; for(let i=0; i<level; i++) stars += '★'; return `<span class="stars">${stars}</span>`;
 }
 
@@ -152,7 +185,7 @@ function renderItems(items, title) {
   return `<div class="section-title">${title}</div>${items.map(i => `<div class="item"><div class="item-head"><span>${i.title}</span> <span>${i.date}</span></div><div class="item-sub">${i.org}</div><div class="item-desc">${i.desc}</div></div>`).join('')}`;
 }
 
-// --- RENDER PREVIEW (COMPREHENSIVE UPDATE) ---
+// --- RENDER PREVIEW ---
 function renderPreview() {
   try { autoSave(); } catch(e) {}
   const data = getData();
@@ -168,8 +201,6 @@ function renderPreview() {
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // --- SKILLS & LANGUAGES HTML ---
-  // توجه: از text-align: end استفاده شد تا در انگلیسی سمت راست و در کوردی سمت چپ برود
   const skillsListHTML = data.skills.length ? `
     <div class="section-title">${t.skill}</div>
     <div class="main-skills-grid">
@@ -192,7 +223,6 @@ function renderPreview() {
       `).join('')}
     </div>` : '';
 
-  // --- HELPER: Sidebar Details ---
   const getSidebarDetails = (darkTheme = false) => `
     <div class="contact-section">
       <div class="section-title" style="margin-top:0; ${darkTheme ? 'color:white; border-color:rgba(255,255,255,0.2);' : ''}">${t.contact}</div>
@@ -208,7 +238,6 @@ function renderPreview() {
     </div>
   `;
 
-  // --- HELPER: Header Details ---
   const getHeaderDetails = () => `
     <div class="contact-row">
       ${data.phone ? `<span>${data.phone}</span>` : ''}
@@ -384,7 +413,7 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// --- DUAL STRATEGY EXPORT (WINDOWS & MOBILE) ---
+// --- DUAL STRATEGY EXPORT ---
 function exportPDF() {
   if (window.innerWidth >= 1024) {
     const element = document.getElementById('resumePreview');
