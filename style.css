@@ -34,8 +34,8 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 .t-opt { padding: 8px; font-size: 11px; text-align: center; background: #f0f0f0; cursor: pointer; border-radius: 4px; border: 2px solid transparent; }
 .t-opt.active { border-color: var(--accent); background: white; color: var(--accent); font-weight: bold; }
-.item-card { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 8px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .item-badge { font-size: 11px; font-weight: bold; color: var(--accent); margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 5px; }
+.item-card { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 8px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .btn-remove { position: absolute; top: 5px; right: 5px; background: #ffebee; color: red; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; border-radius: 3px; }
 .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 5px; }
 
@@ -46,7 +46,6 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 /* Helpers */
 .skill-bar-container { background: #eee; height: 6px; width: 100%; border-radius: 3px; margin-top: 5px; overflow: hidden; }
 .skill-bar-fill { height: 100%; background: var(--accent); }
-/* STARS STYLE */
 .stars { color: #f1c40f; letter-spacing: 2px; font-size: 16px; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
 .dots { display: flex; gap: 3px; }
 .dot { width: 10px; height: 10px; border-radius: 50%; background: #eee; }
@@ -69,7 +68,8 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .template-sky .contact-item { font-size: 13px; display: flex; flex-direction:column; align-items: flex-start; margin-bottom: 15px; color: #444; }
 .template-sky .contact-item i { color: var(--sky-blue); width: 15px; margin-bottom:3px; }
 .template-sky .main .item { border-left: 2px solid var(--sky-blue); padding-left: 15px; margin-left: 5px; }
-body.rtl .template-sky { flex-direction: row-reverse; background: linear-gradient(to left, var(--sky-gray) 30%, white 30%); text-align: right; }
+/* FIX RTL SKY: حذف flex-direction مزاحم */
+body.rtl .template-sky { background: linear-gradient(to left, var(--sky-gray) 30%, white 30%); text-align: right; }
 body.rtl .template-sky .main .item { border-left: none; border-right: 2px solid var(--sky-blue); padding-left: 0; padding-right: 15px; }
 
 /* MODERN */
@@ -82,8 +82,9 @@ body.rtl .template-sky .main .item { border-left: none; border-right: 2px solid 
 .template-modern .section-title { font-size: 16px; font-weight: 800; border-bottom: 2px solid #e0e0e0; margin: 30px 0 15px 0; color: #2c3e50; text-transform: uppercase; }
 .template-modern .sidebar .section-title { border-color: rgba(255,255,255,0.2); color: white; border-bottom: 1px solid rgba(255,255,255,0.1); }
 .template-modern .contact-item { font-size: 13px; margin-bottom: 15px; line-height: 1.5; color: white; text-align:left; } 
+/* FIX RTL MODERN: حذف flex-direction مزاحم */
 body.rtl .template-modern .contact-item { text-align:right; }
-body.rtl .template-modern { flex-direction: row-reverse; background: linear-gradient(to left, #2c3e50 30%, white 30%); }
+body.rtl .template-modern { background: linear-gradient(to left, #2c3e50 30%, white 30%); }
 
 /* ELEGANT */
 .template-elegant { padding: 40px; height: 100%; }
@@ -133,24 +134,15 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
 @media screen and (max-width: 1024px) {
     body { overflow: hidden; height: 100vh; }
     .app-shell { flex-direction: column; height: 100%; }
-    
     .editor-panel { width: 100%; border-right: none; height: calc(100vh - 60px); overflow-y: auto; padding-bottom: 80px; display: none; }
     .editor-panel.active { display: flex; }
-    
-    /* به این پنل اجازه اسکرول دادیم تا با زوم کردن گیر نکند */
     .preview-panel { width: 100%; height: calc(100vh - 60px); background: #525659; display: none; padding: 0; padding-top: 70px; padding-bottom: 60px; overflow: auto; position: relative; align-items: flex-start; justify-content: center; }
     .preview-panel.active { display: flex; }
-    
     .mobile-template-bar { display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: white; position: fixed; top: 0; left: 0; width: 100%; z-index: 50; box-shadow: 0 2px 5px rgba(0,0,0,0.1); scrollbar-width: none; }
     .mobile-template-bar::-webkit-scrollbar { display: none; }
-    
-    /* استایل دکمه‌های کپسولی بالای صفحه */
     .mt-opt { white-space: nowrap; padding: 8px 18px; background: #e0e0e0; border-radius: 20px; font-size: 13px; font-weight: bold; color: #555; border: 1px solid #ccc; cursor: pointer;}
     .mt-opt.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-    /* افزایش مقیاس (Scale) به 0.52 برای بزرگتر دیده شدن */
     #resumePreview { width: 210mm !important; min-width: 210mm !important; transform: scale(0.52); transform-origin: top center; margin-top: 15px; margin-left: auto; margin-right: auto; margin-bottom: 50px; }
-    
     .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
     .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: #999; font-size: 12px; cursor: pointer; }
     .nav-btn i { font-size: 20px; margin-bottom: 4px; }
