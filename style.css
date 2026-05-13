@@ -66,7 +66,7 @@ p { line-height: 1.6; word-break: break-word; }
 
 /* PHOTO FRAME */
 .photo-frame { overflow: hidden; display: flex; justify-content: center; align-items: center; }
-.photo-img { width: 100%; height: 100%; object-fit: cover; }
+.photo-img { width: 100%; height: 100%; background-repeat: no-repeat; border-radius: inherit; }
 
 /* TEMPLATES */
 /* SKY */
@@ -162,18 +162,10 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
   #resumePreview { box-shadow: none; margin: 0; width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; transform: none !important; }
 }
 
-/* ===== FIX RTL HTML2CANVAS BUGS (Overlapping Text & Alignment) ===== */
+/* ===== FIX RTL HTML2CANVAS BUGS ===== */
 body.rtl * {
-    letter-spacing: normal !important;
-    word-spacing: normal !important;
+    letter-spacing: 0px !important;
 }
 body.rtl .stars {
     letter-spacing: 2px !important;
-}
-body.rtl [style*="display:block"], 
-body.rtl [style*="display:inline-block"],
-body.rtl div, 
-body.rtl span, 
-body.rtl strong {
-    unicode-bidi: isolate;
 }
