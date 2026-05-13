@@ -4,8 +4,8 @@
   --accent: #3498db;
   --bg: #f3f4f6;
   --sidebar-w: 380px;
-  --a4-w: 210mm;
-  --a4-h: 296.8mm;
+  --a4-w: 794px; /* ثابت شده روی پیکسل برای جلوگیری از فشرده شدن در موبایل */
+  --a4-h: 1123px; /* ثابت شده روی پیکسل برای ارتفاع دقیق A4 */
   --sky-blue: #0891b2;
   --sky-gray: #f0f2f5;
 }
@@ -68,7 +68,11 @@ p { line-height: 1.6; word-break: break-word; }
 .photo-frame { overflow: hidden; display: flex; justify-content: center; align-items: center; position: relative; }
 .photo-frame img { position: absolute; max-width: none !important; object-fit: cover; }
 
-/* TEMPLATES */
+/* TEMPLATES (All forced to min-height of A4 to fill empty space) */
+.template-sky, .template-modern, .template-elegant, .template-creative, .template-minimal, .template-bold, .template-compact {
+    min-height: var(--a4-h) !important;
+}
+
 /* SKY */
 .template-sky { display: flex; height: 100%; background: linear-gradient(to right, var(--sky-gray) 30%, white 30%); }
 .template-sky .sidebar { width: 30%; padding: 30px 20px; color: #333; height: 100%; }
@@ -96,7 +100,7 @@ body.rtl .template-modern { background: linear-gradient(to left, #2c3e50 30%, wh
 /* ELEGANT */
 .template-elegant { padding: 40px; height: 100%; }
 .template-elegant header { text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 20px; margin-bottom: 20px; }
-.template-elegant .photo-frame { width: 140px; height: 140px; max-width: 140px; border-radius: 50%; border: 1px solid #ddd; padding: 3px; margin: 0 auto 15px auto; }
+.template-elegant .photo-frame { width: 140px; height: 140px; max-width: 140px; border-radius: 50%; border: 1px solid #ddd; padding: 3px; display: inline-flex; margin-bottom: 15px; }
 .template-elegant h1 { font-family: serif; font-size: 36px; color: #2c3e50; margin: 0; }
 .template-elegant h2 { font-size: 16px; color: #7f8c8d; font-weight: normal; margin-top: 5px; letter-spacing: 2px; text-transform: uppercase; }
 .template-elegant .section-title { font-family: serif; font-size: 1.2em; font-weight: bold; text-transform: uppercase; color: #2c3e50; margin: 25px 0 15px 0; border-left: 4px solid #c0392b; padding-left: 10px; background: #f9f9f9; padding: 5px 10px; }
@@ -148,7 +152,7 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
     .mobile-template-bar::-webkit-scrollbar { display: none; }
     .mt-opt { white-space: nowrap; padding: 8px 18px; background: #e0e0e0; border-radius: 20px; font-size: 13px; font-weight: bold; color: #555; border: 1px solid #ccc; cursor: pointer;}
     .mt-opt.active { background: var(--primary); color: white; border-color: var(--primary); }
-    #resumePreview { width: 210mm !important; min-width: 210mm !important; transform: scale(0.52); transform-origin: top center; margin-top: 15px; margin-left: auto; margin-right: auto; margin-bottom: 50px; }
+    #resumePreview { width: 794px !important; min-width: 794px !important; transform: scale(0.45); transform-origin: top center; margin-top: 15px; margin-left: auto; margin-right: auto; margin-bottom: 50px; }
     .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
     .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: #999; font-size: 12px; cursor: pointer; }
     .nav-btn i { font-size: 20px; margin-bottom: 4px; }
@@ -160,4 +164,10 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
   .editor-panel, .sticky-controls, .mobile-nav, .mobile-template-bar { display: none !important; }
   .preview-panel { padding: 0; margin: 0; display: block !important; }
   #resumePreview { box-shadow: none; margin: 0; width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; transform: none !important; }
+}
+
+/* ===== FIX RTL HTML2CANVAS BUGS ===== */
+/* فقط خنثی کردن letter-spacing های مزاحم برای هدرها، بدون دخالت در اسپیس های متن */
+body.rtl h1, body.rtl h2, body.rtl .section-title, body.rtl .item-head {
+    letter-spacing: normal !important;
 }
