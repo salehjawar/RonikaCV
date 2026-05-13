@@ -38,12 +38,22 @@
       </div>
       
       <div class="scrollable-content">
-          <div class="form-group">
-            <label>Language / زمان</label>
-            <select id="languageSelect" onchange="updateUI()">
-              <option value="en">English</option>
-              <option value="ku">کوردی (سۆرانی)</option>
-            </select>
+          <div class="form-group" style="display:flex; gap:10px;">
+            <div style="flex:1">
+                <label>Language / زمان</label>
+                <select id="languageSelect" onchange="updateUI()">
+                  <option value="en">English</option>
+                  <option value="ku">کوردی (سۆرانی)</option>
+                </select>
+            </div>
+            <div style="flex:1">
+                <label id="lblTextSize">Text Size</label>
+                <select id="textSizeSelect" onchange="renderPreview()">
+                  <option value="text-small">Small</option>
+                  <option value="text-normal" selected>Normal</option>
+                  <option value="text-large">Large</option>
+                </select>
+            </div>
           </div>
 
           <div class="form-group">
@@ -100,6 +110,15 @@
                 <label id="lblPhoto">Photo</label>
                 <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)">
             </div>
+            
+            <div id="photoControls" style="display:none; background:#f9f9f9; padding:10px; border-radius:5px; margin-bottom:10px;">
+                <label id="lblPhotoZoom" style="font-size:11px; display:block; margin-bottom:5px;">Zoom</label>
+                <input type="range" id="photoZoom" min="100" max="250" value="100" style="width:100%; margin-bottom:10px;" oninput="renderPreview()">
+                
+                <label id="lblPhotoY" style="font-size:11px; display:block; margin-bottom:5px;">Up / Down</label>
+                <input type="range" id="photoY" min="0" max="100" value="50" style="width:100%;" oninput="renderPreview()">
+            </div>
+
             <div class="form-group"><textarea id="summary" placeholder="Summary..." rows="3" oninput="renderPreview()"></textarea></div>
           </div>
 
@@ -149,7 +168,7 @@
         <div class="mt-opt" onclick="setTemplate('minimal', this)" data-t="minimal">Minimal</div>
         <div class="mt-opt" onclick="setTemplate('bold', this)" data-t="bold">Bold</div>
       </div>
-      <div id="resumePreview"></div>
+      <div id="resumePreview" class="text-normal"></div>
       <div style="height: 120px; width: 100%;"></div>
     </div>
 
