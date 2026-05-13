@@ -11,14 +11,14 @@ const labels = {
       lang_section: "Languages", summary: "Summary", contact: "Contact", 
       export: "Export Resume", photo: "Photo", font: "Font Style",
       dob: "Date of Birth", marital: "Marital Status", tribe: "Tribe/Ethnicity",
-      textSize: "Text Size", photoZoom: "Photo Zoom", photoY: "Up / Down"
+      textSize: "Text Size", photoZoom: "Photo Zoom", photoX: "Left / Right", photoY: "Up / Down"
   },
   ku: { 
       personal: "زانیاری کەسی", exp: "ئەزموونی کار", edu: "خوێندن", skill: "تواناکان", 
       lang_section: "زمانەکان", summary: "پوختە", contact: "پەیوەندی", 
       export: "داگرتنی سی‌وی", photo: "وێنە", font: "جۆری فۆنت",
       dob: "بەرواری لەدایکبوون", marital: "باری خێزانی", tribe: "عەشیرەت",
-      textSize: "قەبارەی فۆنت", photoZoom: "زوومکردنی وێنە", photoY: "سەرەوە / خوارەوە"
+      textSize: "قەبارەی فۆنت", photoZoom: "زوومکردنی وێنە", photoX: "چەپ / ڕاست", photoY: "سەرەوە / خوارەوە"
   }
 };
 
@@ -42,6 +42,7 @@ function updateUI() {
   
   document.getElementById('lblTextSize').innerText = t.textSize;
   document.getElementById('lblPhotoZoom').innerText = t.photoZoom;
+  document.getElementById('lblPhotoX').innerText = t.photoX;
   document.getElementById('lblPhotoY').innerText = t.photoY;
 
   renderPreview();
@@ -86,7 +87,8 @@ function handlePhotoUpload(input) {
     const reader = new FileReader();
     reader.onload = (e) => { 
         state.photoBase64 = e.target.result; 
-        document.getElementById('photoControls').style.display = 'flex'; // نمایش تنظیمات عکس
+        document.getElementById('photoControls').style.display = 'flex'; 
+        document.getElementById('photoControls').style.flexDirection = 'column'; 
         renderPreview(); 
     };
     reader.readAsDataURL(input.files[0]);
@@ -176,6 +178,7 @@ function getData() {
     summary: getVal('summary'),
     photo: state.photoBase64,
     photoZoom: getVal('photoZoom') || 100,
+    photoX: getVal('photoX') || 50,
     photoY: getVal('photoY') || 50,
     skills: skills,
     languages: languages,
@@ -201,7 +204,6 @@ function renderPreview() {
   const t = labels[state.lang];
   const container = document.getElementById('resumePreview');
   
-  // اعمال فونت و سایز متن
   container.style.fontFamily = document.getElementById('fontSelect').value;
   container.className = document.getElementById('textSizeSelect').value;
 
@@ -213,10 +215,10 @@ function renderPreview() {
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // کد تولید عکس با فریم (جهت تنظیم زوم و موقعیت)
+  // استفاده از Background-image به جای img برای تنظیم دقیق و پشتیبانی 100% در PDF
   const photoHTML = data.photo ? `
     <div class="photo-frame">
-        <img src="${data.photo}" class="photo-img" style="object-position: 50% ${data.photoY}%; transform: scale(${data.photoZoom / 100});">
+        <div class="photo-img" style="background-image: url('${data.photo}'); background-size: ${data.photoZoom}%; background-position: ${data.photoX}% ${data.photoY}%;"></div>
     </div>` : '';
 
   const skillsListHTML = data.skills.length ? `
@@ -510,8 +512,8 @@ function exportWord() {
 }
 
 function saveProjectData() { try { const data = getData(); const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data)); const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "CV_Project.json"); document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); } catch(e) { alert("Save failed."); } }
-function loadProjectData(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); populateForm(data); document.getElementById('photoControls').style.display = data.photo ? 'flex' : 'none'; alert("Loaded successfully!"); } catch (err) { alert("Error loading file."); } }; reader.readAsText(file); }
-function populateForm(data) { if(!data) return; document.getElementById('educationContainer').innerHTML = ''; document.getElementById('experienceContainer').innerHTML = ''; document.getElementById('skillContainer').innerHTML = ''; document.getElementById('languageContainer').innerHTML = ''; const safeVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }; safeVal('fullName', data.fullName); safeVal('jobTitle', data.jobTitle); safeVal('phone', data.phone); safeVal('email', data.email); safeVal('address', data.address); safeVal('summary', data.summary); safeVal('dob', data.dob); safeVal('marital', data.marital); safeVal('tribe', data.tribe); if(data.photoZoom) safeVal('photoZoom', data.photoZoom); if(data.photoY) safeVal('photoY', data.photoY); if (data.photo) { state.photoBase64 = data.photo; document.getElementById('photoControls').style.display = 'flex'; } const addItemsSafe = (arr, type, fields) => { if(arr && Array.isArray(arr)) { arr.forEach(item => { addItem(type); const container = document.getElementById(`${type}Container`); const card = container.lastElementChild; if(card) { fields.forEach(f => { const inp = card.querySelector(f.sel); if(inp) inp.value = item[f.key] || ''; }); } }); } }; addItemsSafe(data.edu, 'education', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]); addItemsSafe(data.exp, 'experience', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]); addItemsSafe(data.skills, 'skill', [{sel: '.inp-skill', key: 'name'}, {sel: '.inp-level', key: 'level'}]); addItemsSafe(data.languages, 'language', [{sel: '.inp-lang', key: 'name'}, {sel: '.inp-level', key: 'level'}]); renderPreview(); }
+function loadProjectData(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); populateForm(data); document.getElementById('photoControls').style.display = data.photo ? 'flex' : 'none'; document.getElementById('photoControls').style.flexDirection = 'column'; alert("Loaded successfully!"); } catch (err) { alert("Error loading file."); } }; reader.readAsText(file); }
+function populateForm(data) { if(!data) return; document.getElementById('educationContainer').innerHTML = ''; document.getElementById('experienceContainer').innerHTML = ''; document.getElementById('skillContainer').innerHTML = ''; document.getElementById('languageContainer').innerHTML = ''; const safeVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }; safeVal('fullName', data.fullName); safeVal('jobTitle', data.jobTitle); safeVal('phone', data.phone); safeVal('email', data.email); safeVal('address', data.address); safeVal('summary', data.summary); safeVal('dob', data.dob); safeVal('marital', data.marital); safeVal('tribe', data.tribe); if(data.photoZoom) safeVal('photoZoom', data.photoZoom); if(data.photoX) safeVal('photoX', data.photoX); if(data.photoY) safeVal('photoY', data.photoY); if (data.photo) { state.photoBase64 = data.photo; document.getElementById('photoControls').style.display = 'flex'; document.getElementById('photoControls').style.flexDirection = 'column'; } const addItemsSafe = (arr, type, fields) => { if(arr && Array.isArray(arr)) { arr.forEach(item => { addItem(type); const container = document.getElementById(`${type}Container`); const card = container.lastElementChild; if(card) { fields.forEach(f => { const inp = card.querySelector(f.sel); if(inp) inp.value = item[f.key] || ''; }); } }); } }; addItemsSafe(data.edu, 'education', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]); addItemsSafe(data.exp, 'experience', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]); addItemsSafe(data.skills, 'skill', [{sel: '.inp-skill', key: 'name'}, {sel: '.inp-level', key: 'level'}]); addItemsSafe(data.languages, 'language', [{sel: '.inp-lang', key: 'name'}, {sel: '.inp-level', key: 'level'}]); renderPreview(); }
 function resetData() { if(confirm("Are you sure?")) { localStorage.removeItem('cv_autosave'); location.reload(); } }
 function autoSave() { const data = getData(); localStorage.setItem('cv_autosave', JSON.stringify(data)); }
 window.addEventListener('load', () => { const saved = localStorage.getItem('cv_autosave'); if(saved) { try { populateForm(JSON.parse(saved)); } catch(e) {} } else { updateUI(); } });
