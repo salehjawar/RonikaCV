@@ -215,10 +215,10 @@ function renderPreview() {
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // استفاده از Background-image به جای img برای تنظیم دقیق و پشتیبانی 100% در PDF
+  // --- ترفند لایه درونی برای حفظ بالاترین کیفیت عکس و تنظیمات کنترل ---
   const photoHTML = data.photo ? `
     <div class="photo-frame">
-        <div class="photo-img" style="background-image: url('${data.photo}'); background-size: ${data.photoZoom}%; background-position: ${data.photoX}% ${data.photoY}%;"></div>
+        <div style="width: 100%; height: 100%; background-image: url('${data.photo}'); background-size: cover; background-position: ${data.photoX}% ${data.photoY}%; background-repeat: no-repeat; transform: scale(${data.photoZoom / 100}); transform-origin: center;"></div>
     </div>` : '';
 
   const skillsListHTML = data.skills.length ? `
@@ -443,6 +443,7 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
+// --- آپدیت: تنظیم Scale 3 برای کیفیت خارق‌العاده بالا ---
 function exportPDF() {
   if (window.innerWidth >= 1024) {
     const element = document.getElementById('resumePreview');
@@ -452,8 +453,8 @@ function exportPDF() {
     element.style.height = 'auto';
 
     const opt = {
-      margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
+      margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 3, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save().then(() => { element.style.width = originalWidth; });
@@ -491,7 +492,7 @@ function exportPDFMobile() {
 
   const opt = {
     margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
+    html2canvas: { scale: 3, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
