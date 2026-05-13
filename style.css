@@ -61,12 +61,11 @@ body.rtl .editor-panel { border-right: none; border-left: 1px solid #ccc; font-f
 .item { margin-bottom: 15px; }
 .item-head { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; }
 .item-sub { font-size: 1em; color: #666; font-style: italic; }
-.item-desc { font-size: 1em; margin-top: 3px; text-align: justify; line-height: 1.5; color: #444; word-break: break-word; }
+.item-desc { font-size: 1em; margin-top: 3px; line-height: 1.5; color: #444; word-break: break-word; } /* حذف justify */
 p { line-height: 1.6; word-break: break-word; }
 
 /* PHOTO FRAME */
 .photo-frame { overflow: hidden; display: flex; justify-content: center; align-items: center; }
-.photo-img { width: 100%; height: 100%; background-repeat: no-repeat; border-radius: inherit; }
 
 /* TEMPLATES */
 /* SKY */
@@ -162,9 +161,14 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
   #resumePreview { box-shadow: none; margin: 0; width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; transform: none !important; }
 }
 
-/* ===== FIX RTL HTML2CANVAS BUGS ===== */
-body.rtl * {
-    letter-spacing: 0px !important;
+/* ===== FIX RTL HTML2CANVAS BUGS (Overlapping Text & Alignment) ===== */
+/* حذف کدهای قبلی که باعث خرابی اسپیس می‌شدند و اجبار راست‌چین بودن برای حفظ فاصله‌ها */
+body.rtl h1, body.rtl h2, body.rtl .section-title, body.rtl .item-head {
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+}
+body.rtl .item-desc, body.rtl p, body.rtl .contact-item {
+    text-align: right !important;
 }
 body.rtl .stars {
     letter-spacing: 2px !important;
