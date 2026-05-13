@@ -83,13 +83,11 @@ function handlePhotoUpload(input) {
   }
 }
 
-// --- اصلاح شده: اضافه شدن هدر (نشانگر) به کادرها ---
 function addItem(type) {
   const container = document.getElementById(`${type}Container`);
   const id = Date.now();
   let html = '';
   
-  // تعیین آیکون و متن نشانگر بر اساس نوع کادر و زبان انتخاب شده
   let badgeIcon = '';
   let badgeText = '';
   if (type === 'education') { badgeIcon = 'fas fa-graduation-cap'; badgeText = state.lang === 'en' ? 'Education' : 'خوێندن'; }
@@ -185,7 +183,6 @@ function renderItems(items, title) {
   return `<div class="section-title">${title}</div>${items.map(i => `<div class="item"><div class="item-head"><span>${i.title}</span> <span>${i.date}</span></div><div class="item-sub">${i.org}</div><div class="item-desc">${i.desc}</div></div>`).join('')}`;
 }
 
-// --- RENDER PREVIEW ---
 function renderPreview() {
   try { autoSave(); } catch(e) {}
   const data = getData();
@@ -251,7 +248,6 @@ function renderPreview() {
     </div>
   `;
 
-  // --- TEMPLATES ---
   if (state.template === 'sky') { 
     html = `
       <div class="template-sky">
@@ -413,62 +409,57 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// --- DUAL STRATEGY EXPORT ---
+// =========================================================================
+// UNIFIED, BULLETPROOF PDF EXPORT (Fixes RTL Shift Bug on Mobile & Desktop)
+// =========================================================================
 function exportPDF() {
-  if (window.innerWidth >= 1024) {
-    const element = document.getElementById('resumePreview');
-    const originalWidth = element.style.width;
-    element.style.width = '210mm'; 
-    element.style.minHeight = '296.8mm';
-    element.style.height = 'auto';
-
-    const opt = {
-      margin: 0,
-      filename: 'CV.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        element.style.width = originalWidth;
-    });
-
-  } else {
-    exportPDFMobile();
-  }
-}
-
-function exportPDFMobile() {
   const original = document.getElementById('resumePreview');
   const clone = original.cloneNode(true);
   const overlay = document.createElement('div');
   
+  // کانتینر را اجباراً LTR می‌کنیم تا باگ انتقال (Shift) در html2canvas خنثی شود
   Object.assign(overlay.style, {
     position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
-    zIndex: '999999', background: '#525659', overflow: 'auto',
-    display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '0'
+    zIndex: '999999', background: '#525659', overflow: 'hidden',
+    display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: '0',
+    direction: 'ltr' 
   });
 
+  // اما داخل خود کلون، راست به چپ را حفظ می‌کنیم تا متن کوردی درست بماند
   Object.assign(clone.style, {
     width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm',
-    transform: 'none', margin: '0', boxShadow: 'none', background: 'white'
+    transform: 'none', margin: '0', boxShadow: 'none', background: 'white',
+    direction: state.lang === 'ku' ? 'rtl' : 'ltr'
   });
+  
   clone.classList.remove('mobile-preview');
-
   overlay.appendChild(clone);
   document.body.appendChild(overlay);
+
+  // ترفند نهایی: بادی اصلی سایت را موقتاً LTR می‌کنیم (کاربر متوجه نمی‌شود چون کانتینر روی صفحه است)
+  const originalBodyDir = document.body.style.direction;
+  if (state.lang === 'ku') { document.body.style.direction = 'ltr'; }
+
   window.scrollTo(0, 0);
 
   const opt = {
-    margin: 0, filename: 'CV.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, windowWidth: 794 },
+    margin: 0, 
+    filename: 'CV.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  html2pdf().set(opt).from(clone).save().then(() => { document.body.removeChild(overlay); })
-    .catch((err) => { if(document.body.contains(overlay)) document.body.removeChild(overlay); });
+  html2pdf().set(opt).from(clone).save()
+    .then(() => { 
+        document.body.removeChild(overlay); 
+        if (state.lang === 'ku') document.body.style.direction = originalBodyDir; // بازگشت به حالت اول
+    })
+    .catch((err) => { 
+        console.error(err);
+        if(document.body.contains(overlay)) document.body.removeChild(overlay); 
+        if (state.lang === 'ku') document.body.style.direction = originalBodyDir; 
+    });
 }
 
 function exportWord() { 
