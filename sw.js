@@ -1,5 +1,5 @@
 // تغییر نام کش به v4 (حیاتی برای رفع مشکل رفرش نشدن)
-const CACHE_NAME = 'ronika-fixed-v17';
+const CACHE_NAME = 'ronika-fixed-v18';
 
 const ASSETS = [
   './',
