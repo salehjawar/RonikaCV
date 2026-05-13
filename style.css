@@ -163,3 +163,12 @@ body.rtl * {
 body.rtl .stars {
     letter-spacing: 2px !important; /* فقط ستاره ها فاصله داشته باشند */
 }
+
+/* قانون نهایی برای ثابت کردن علامت دو نقطه در زبان کوردی */
+body.rtl [style*="display:block"], 
+body.rtl [style*="display:inline-block"],
+body.rtl div, 
+body.rtl span, 
+body.rtl strong {
+    unicode-bidi: isolate;
+}
