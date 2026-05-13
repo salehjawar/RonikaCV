@@ -215,10 +215,11 @@ function renderPreview() {
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // --- ترفند لایه درونی برای حفظ بالاترین کیفیت عکس و تنظیمات کنترل ---
+  // --- ترفند جدید و تضمینی عکس: استفاده از تگ img با عرض پویا ---
+  // این روش هم کیفیت را بالا نگه میدارد، هم چپ/راست کار میکند و هم زوم!
   const photoHTML = data.photo ? `
     <div class="photo-frame">
-        <div style="width: 100%; height: 100%; background-image: url('${data.photo}'); background-size: cover; background-position: ${data.photoX}% ${data.photoY}%; background-repeat: no-repeat; transform: scale(${data.photoZoom / 100}); transform-origin: center;"></div>
+        <img src="${data.photo}" style="width: ${data.photoZoom}%; height: ${data.photoZoom}%; object-fit: cover; object-position: ${data.photoX}% ${data.photoY}%;">
     </div>` : '';
 
   const skillsListHTML = data.skills.length ? `
@@ -267,9 +268,9 @@ function renderPreview() {
       
       ${data.dob || data.marital || data.tribe ? `<div class="section-title" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px; ${darkTheme ? 'color:white;' : ''}">${state.lang==='en'?'Personal':'کەسی'}</div>` : ''}
       
-      ${data.dob ? `<div style="display:block; margin-bottom:12px; font-size:1em; color:${textColor};"><strong style="display:inline-block;">${t.dob}:&rlm;</strong><div style="margin-top:3px; opacity:0.9;">${data.dob}</div></div>` : ''}
-      ${data.marital ? `<div style="display:block; margin-bottom:12px; font-size:1em; color:${textColor};"><strong style="display:inline-block;">${t.marital}:&rlm;</strong><div style="margin-top:3px; opacity:0.9;">${data.marital}</div></div>` : ''}
-      ${data.tribe ? `<div style="display:block; margin-bottom:12px; font-size:1em; color:${textColor};"><strong style="display:inline-block;">${t.tribe}:&rlm;</strong><div style="margin-top:3px; opacity:0.9;">${data.tribe}</div></div>` : ''}
+      ${data.dob ? `<div style="display:block; margin-bottom:12px; font-size:1em; color:${textColor};"><strong style="display:inline-block;">${t.dob}:&rlm;</strong><div class="item-text" style="margin-top:3px; opacity:0.9;">${data.dob}</div></div>` : ''}
+      ${data.marital ? `<div style="display:block; margin-bottom:12px; font-size:1em; color:${textColor};"><strong style="display:inline-block;">${t.marital}:&rlm;</strong><div class="item-text" style="margin-top:3px; opacity:0.9;">${data.marital}</div></div>` : ''}
+      ${data.tribe ? `<div style="display:block; margin-bottom:12px; font-size:1em; color:${textColor};"><strong style="display:inline-block;">${t.tribe}:&rlm;</strong><div class="item-text" style="margin-top:3px; opacity:0.9;">${data.tribe}</div></div>` : ''}
     </div>
   `};
 
@@ -280,9 +281,9 @@ function renderPreview() {
       ${data.address ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;">${data.address}</span>` : ''}
     </div>
     <div class="contact-row" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:8px; font-size:0.9em; opacity:0.8;">
-      ${data.dob ? `<span><strong>${t.dob}:&rlm;</strong> ${data.dob}</span>` : ''}
-      ${data.marital ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.marital}:&rlm;</strong> ${data.marital}</span>` : ''} 
-      ${data.tribe ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.tribe}:&rlm;</strong> ${data.tribe}</span>` : ''}
+      ${data.dob ? `<span><strong>${t.dob}:&rlm;</strong> <span class="item-text">${data.dob}</span></span>` : ''}
+      ${data.marital ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.marital}:&rlm;</strong> <span class="item-text">${data.marital}</span></span>` : ''} 
+      ${data.tribe ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.tribe}:&rlm;</strong> <span class="item-text">${data.tribe}</span></span>` : ''}
     </div>
   `;
 
@@ -433,8 +434,8 @@ function renderPreview() {
                 ${skillsListHTML}
                 ${languagesListHTML}
                 ${data.marital || data.tribe ? `<hr style="margin:10px 0; opacity:0.2;">` : ''}
-                ${data.marital ? `<div style="font-size:0.9em;"><b>${t.marital}:&rlm;</b> ${data.marital}</div>` : ''}
-                ${data.tribe ? `<div style="font-size:0.9em;"><b>${t.tribe}:&rlm;</b> ${data.tribe}</div>` : ''}
+                ${data.marital ? `<div style="font-size:0.9em;"><b>${t.marital}:&rlm;</b> <span class="item-text">${data.marital}</span></div>` : ''}
+                ${data.tribe ? `<div style="font-size:0.9em;"><b>${t.tribe}:&rlm;</b> <span class="item-text">${data.tribe}</span></div>` : ''}
             </div>
         </div>
       </div>`;
@@ -443,7 +444,6 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// --- آپدیت: تنظیم Scale 3 برای کیفیت خارق‌العاده بالا ---
 function exportPDF() {
   if (window.innerWidth >= 1024) {
     const element = document.getElementById('resumePreview');
@@ -452,9 +452,10 @@ function exportPDF() {
     element.style.minHeight = '296.8mm';
     element.style.height = 'auto';
 
+    // Scale برگشت به 2 تا حجم فایل منطقی شود و کیفیت عکس هم با روش جدید عالی می‌ماند
     const opt = {
       margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
-      html2canvas: { scale: 3, useCORS: true },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save().then(() => { element.style.width = originalWidth; });
@@ -477,10 +478,10 @@ function exportPDFMobile() {
 
   Object.assign(clone.style, {
     width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm',
-    transform: 'none', margin: '0', boxShadow: 'none', background: 'white',
-    direction: state.lang === 'ku' ? 'rtl' : 'ltr',
-    fontFamily: state.lang === 'ku' ? "'Vazirmatn', sans-serif" : ""
+    transform: 'none', margin: '0', boxShadow: 'none', background: 'white'
   });
+  
+  if (state.lang === 'ku') { clone.setAttribute('dir', 'rtl'); }
   clone.classList.remove('mobile-preview');
 
   overlay.appendChild(clone);
@@ -492,7 +493,7 @@ function exportPDFMobile() {
 
   const opt = {
     margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 3, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
