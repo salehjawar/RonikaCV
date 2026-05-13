@@ -215,7 +215,6 @@ function renderPreview() {
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // --- ترفند طلایی برای عکس: زوم و جابجایی با فرمول ریاضی دقیق بدون افت کیفیت ---
   const photoHTML = data.photo ? `
     <div class="photo-frame">
         <img src="${data.photo}" style="width: ${data.photoZoom}%; height: ${data.photoZoom}%; transform: translate(${50 - data.photoX}%, ${50 - data.photoY}%);">
@@ -443,38 +442,65 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// --- ساده‌سازی بی‌نقص اکسپورت PDF ---
 function exportPDF() {
+  if (window.innerWidth >= 1024) {
+    const element = document.getElementById('resumePreview');
+    const originalWidth = element.style.width;
+    element.style.width = '794px'; 
+    element.style.minHeight = '1123px';
+    element.style.height = 'auto';
+
+    const opt = {
+      margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => { element.style.width = originalWidth; });
+  } else {
+    exportPDFMobile();
+  }
+}
+
+function exportPDFMobile() {
   const original = document.getElementById('resumePreview');
   const clone = original.cloneNode(true);
   const overlay = document.createElement('div');
   
-  // کانتینر در پشت صحنه (مخفی)
   Object.assign(overlay.style, {
-    position: 'absolute', top: '0', left: '0', width: '210mm',
-    zIndex: '-9999', background: 'white', margin: '0', padding: '0'
+    position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+    zIndex: '999999', background: '#525659', overflow: 'hidden',
+    display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: '0',
+    direction: 'ltr' 
   });
 
   Object.assign(clone.style, {
-    width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm',
-    transform: 'none', margin: '0', boxShadow: 'none'
+    width: '794px', minWidth: '794px', height: 'auto', minHeight: '1123px',
+    transform: 'none', margin: '0', boxShadow: 'none', background: 'white',
+    direction: state.lang === 'ku' ? 'rtl' : 'ltr',
+    fontFamily: state.lang === 'ku' ? "'Vazirmatn', sans-serif" : ""
   });
-  
   clone.classList.remove('mobile-preview');
+
   overlay.appendChild(clone);
   document.body.appendChild(overlay);
+  
+  const originalBodyDir = document.body.style.direction;
+  if (state.lang === 'ku') { document.body.style.direction = 'ltr'; }
+  window.scrollTo(0, 0);
 
-  // کیفیت Scale 2 کاملا کافی است و حجم فایل را کم نگه میدارد
   const opt = {
-    margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+    margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
   html2pdf().set(opt).from(clone).save().then(() => { 
       document.body.removeChild(overlay); 
+      if (state.lang === 'ku') document.body.style.direction = originalBodyDir;
   }).catch((err) => { 
+      console.error(err);
       if(document.body.contains(overlay)) document.body.removeChild(overlay); 
+      if (state.lang === 'ku') document.body.style.direction = originalBodyDir;
   });
 }
 
