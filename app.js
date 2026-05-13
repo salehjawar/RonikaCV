@@ -220,10 +220,9 @@ function renderPreview() {
       `).join('')}
     </div>` : '';
 
-  // --- اصلاح فوق‌العاده برای رفع باگ سایدبار در PDF ---
+  // --- ترفند حل مشکل علامت دو نقطه با استفاده از &rlm; و استایل Block ---
   const getSidebarDetails = (darkTheme = false) => {
     const align = state.lang === 'ku' ? 'right' : 'left';
-    const marginDir = state.lang === 'ku' ? 'marginLeft' : 'marginRight';
     const textColor = darkTheme ? 'white' : '#444';
     const iconColor = darkTheme ? 'white' : 'var(--sky-blue)'; 
 
@@ -232,27 +231,26 @@ function renderPreview() {
       <div class="section-title" style="margin-top:0; ${darkTheme ? 'color:white; border-color:rgba(255,255,255,0.2);' : ''}">${t.contact}</div>
       
       <div style="display:block; margin-bottom:10px; font-size:13px; color:${textColor};">
-          <i class="fas fa-phone" style="width:15px; display:inline-block; text-align:center; ${marginDir}:5px; color:${iconColor};"></i>
-          <span style="display:inline-block; direction:ltr;">${data.phone}</span>
+          <i class="fas fa-phone" style="width:15px; display:inline-block; text-align:center; color:${iconColor};"></i>
+          <span style="direction:ltr; display:inline-block;">${data.phone}</span>
       </div>
       <div style="display:block; margin-bottom:10px; font-size:13px; color:${textColor};">
-          <i class="fas fa-envelope" style="width:15px; display:inline-block; text-align:center; ${marginDir}:5px; color:${iconColor};"></i>
+          <i class="fas fa-envelope" style="width:15px; display:inline-block; text-align:center; color:${iconColor};"></i>
           <span>${data.email}</span>
       </div>
       <div style="display:block; margin-bottom:15px; font-size:13px; color:${textColor};">
-          <i class="fas fa-map-marker-alt" style="width:15px; display:inline-block; text-align:center; ${marginDir}:5px; color:${iconColor};"></i>
+          <i class="fas fa-map-marker-alt" style="width:15px; display:inline-block; text-align:center; color:${iconColor};"></i>
           <span>${data.address}</span>
       </div>
       
       ${data.dob || data.marital || data.tribe ? `<div class="section-title" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px; ${darkTheme ? 'color:white;' : ''}">${state.lang==='en'?'Personal':'کەسی'}</div>` : ''}
       
-      ${data.dob ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:block;">${t.dob}:</strong><span style="display:block; margin-top:3px; opacity:0.9;">${data.dob}</span></div>` : ''}
-      ${data.marital ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:block;">${t.marital}:</strong><span style="display:block; margin-top:3px; opacity:0.9;">${data.marital}</span></div>` : ''}
-      ${data.tribe ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:block;">${t.tribe}:</strong><span style="display:block; margin-top:3px; opacity:0.9;">${data.tribe}</span></div>` : ''}
+      ${data.dob ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:inline-block;">${t.dob}:&rlm;</strong><div style="margin-top:3px; opacity:0.9;">${data.dob}</div></div>` : ''}
+      ${data.marital ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:inline-block;">${t.marital}:&rlm;</strong><div style="margin-top:3px; opacity:0.9;">${data.marital}</div></div>` : ''}
+      ${data.tribe ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:inline-block;">${t.tribe}:&rlm;</strong><div style="margin-top:3px; opacity:0.9;">${data.tribe}</div></div>` : ''}
     </div>
   `};
 
-  // --- اصلاح استایل‌های هدر برای قالب‌های بدون سایدبار ---
   const getHeaderDetails = () => `
     <div class="contact-row" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;">
       ${data.phone ? `<span style="direction:ltr; display:inline-block;">${data.phone}</span>` : ''}
@@ -260,9 +258,9 @@ function renderPreview() {
       ${data.address ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;">${data.address}</span>` : ''}
     </div>
     <div class="contact-row" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:8px; font-size:12px; opacity:0.8;">
-      ${data.dob ? `<span><strong>${t.dob}:</strong> ${data.dob}</span>` : ''}
-      ${data.marital ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.marital}:</strong> ${data.marital}</span>` : ''} 
-      ${data.tribe ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.tribe}:</strong> ${data.tribe}</span>` : ''}
+      ${data.dob ? `<span><strong>${t.dob}:&rlm;</strong> ${data.dob}</span>` : ''}
+      ${data.marital ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.marital}:&rlm;</strong> ${data.marital}</span>` : ''} 
+      ${data.tribe ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.tribe}:&rlm;</strong> ${data.tribe}</span>` : ''}
     </div>
   `;
 
@@ -413,8 +411,8 @@ function renderPreview() {
                 ${skillsListHTML}
                 ${languagesListHTML}
                 ${data.marital || data.tribe ? `<hr style="margin:10px 0; opacity:0.2;">` : ''}
-                ${data.marital ? `<div style="font-size:11px;"><b>${t.marital}:</b> ${data.marital}</div>` : ''}
-                ${data.tribe ? `<div style="font-size:11px;"><b>${t.tribe}:</b> ${data.tribe}</div>` : ''}
+                ${data.marital ? `<div style="font-size:11px;"><b>${t.marital}:&rlm;</b> ${data.marital}</div>` : ''}
+                ${data.tribe ? `<div style="font-size:11px;"><b>${t.tribe}:&rlm;</b> ${data.tribe}</div>` : ''}
             </div>
         </div>
       </div>`;
@@ -423,33 +421,7 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// --- DUAL STRATEGY EXPORT ---
 function exportPDF() {
-  if (window.innerWidth >= 1024) {
-    const element = document.getElementById('resumePreview');
-    const originalWidth = element.style.width;
-    element.style.width = '210mm'; 
-    element.style.minHeight = '296.8mm';
-    element.style.height = 'auto';
-
-    const opt = {
-      margin: 0,
-      filename: 'CV.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        element.style.width = originalWidth;
-    });
-
-  } else {
-    exportPDFMobile();
-  }
-}
-
-function exportPDFMobile() {
   const original = document.getElementById('resumePreview');
   const clone = original.cloneNode(true);
   const overlay = document.createElement('div');
@@ -498,6 +470,7 @@ function exportWord() {
   let content = `<html ${isRTL ? 'dir="rtl"' : ''}><head><meta charset="utf-8"><style>${styles}</style></head><body><h1>${data.fullName}</h1><p>${data.jobTitle}<br>${data.phone} | ${data.email}</p>${data.summary ? `<h3>${t.summary}</h3><p>${data.summary}</p>` : ''}${data.edu.length ? `<h3>${t.edu}</h3>` : ''}${data.edu.map(i => `<p><b>${i.title}</b>, ${i.org}<br>${i.date}<br>${i.desc}</p>`).join('')}${data.exp.length ? `<h3>${t.exp}</h3>` : ''}${data.exp.map(i => `<p><b>${i.title}</b>, ${i.org}<br>${i.date}<br>${i.desc}</p>`).join('')}${data.skills.length ? `<h3>${t.skill}</h3>` : ''}<ul>${data.skills.map(s => `<li>${s.name} (${s.level}/5)</li>`).join('')}</ul></body></html>`;
   const blob = new Blob(['\ufeff', content], { type: 'application/msword' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `CV-${data.fullName}.doc`; link.click();
 }
+
 function saveProjectData() { try { const data = getData(); const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data)); const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "CV_Project.json"); document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); } catch(e) { alert("Save failed."); } }
 function loadProjectData(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); populateForm(data); alert("Loaded successfully!"); } catch (err) { alert("Error loading file."); } }; reader.readAsText(file); }
 function populateForm(data) { if(!data) return; document.getElementById('educationContainer').innerHTML = ''; document.getElementById('experienceContainer').innerHTML = ''; document.getElementById('skillContainer').innerHTML = ''; document.getElementById('languageContainer').innerHTML = ''; const safeVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }; safeVal('fullName', data.fullName); safeVal('jobTitle', data.jobTitle); safeVal('phone', data.phone); safeVal('email', data.email); safeVal('address', data.address); safeVal('summary', data.summary); safeVal('dob', data.dob); safeVal('marital', data.marital); safeVal('tribe', data.tribe); if (data.photo) state.photoBase64 = data.photo; const addItemsSafe = (arr, type, fields) => { if(arr && Array.isArray(arr)) { arr.forEach(item => { addItem(type); const container = document.getElementById(`${type}Container`); const card = container.lastElementChild; if(card) { fields.forEach(f => { const inp = card.querySelector(f.sel); if(inp) inp.value = item[f.key] || ''; }); } }); } }; addItemsSafe(data.edu, 'education', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]); addItemsSafe(data.exp, 'experience', [{sel: '.inp-title', key: 'title'}, {sel: '.inp-org', key: 'org'}, {sel: '.inp-date', key: 'date'}, {sel: '.inp-desc', key: 'desc'}]); addItemsSafe(data.skills, 'skill', [{sel: '.inp-skill', key: 'name'}, {sel: '.inp-level', key: 'level'}]); addItemsSafe(data.languages, 'language', [{sel: '.inp-lang', key: 'name'}, {sel: '.inp-level', key: 'level'}]); renderPreview(); }
