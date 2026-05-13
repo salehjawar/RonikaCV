@@ -220,31 +220,49 @@ function renderPreview() {
       `).join('')}
     </div>` : '';
 
-  const getSidebarDetails = (darkTheme = false) => `
-    <div class="contact-section">
+  // --- اصلاح فوق‌العاده برای رفع باگ سایدبار در PDF ---
+  const getSidebarDetails = (darkTheme = false) => {
+    const align = state.lang === 'ku' ? 'right' : 'left';
+    const marginDir = state.lang === 'ku' ? 'marginLeft' : 'marginRight';
+    const textColor = darkTheme ? 'white' : '#444';
+    const iconColor = darkTheme ? 'white' : 'var(--sky-blue)'; 
+
+    return `
+    <div class="contact-section" style="text-align: ${align};">
       <div class="section-title" style="margin-top:0; ${darkTheme ? 'color:white; border-color:rgba(255,255,255,0.2);' : ''}">${t.contact}</div>
-      <div class="contact-item"><i class="fas fa-phone"></i> ${data.phone}</div>
-      <div class="contact-item"><i class="fas fa-envelope"></i> ${data.email}</div>
-      <div class="contact-item"><i class="fas fa-map-marker-alt"></i> ${data.address}</div>
+      
+      <div style="display:block; margin-bottom:10px; font-size:13px; color:${textColor};">
+          <i class="fas fa-phone" style="width:15px; display:inline-block; text-align:center; ${marginDir}:5px; color:${iconColor};"></i>
+          <span style="display:inline-block; direction:ltr;">${data.phone}</span>
+      </div>
+      <div style="display:block; margin-bottom:10px; font-size:13px; color:${textColor};">
+          <i class="fas fa-envelope" style="width:15px; display:inline-block; text-align:center; ${marginDir}:5px; color:${iconColor};"></i>
+          <span>${data.email}</span>
+      </div>
+      <div style="display:block; margin-bottom:15px; font-size:13px; color:${textColor};">
+          <i class="fas fa-map-marker-alt" style="width:15px; display:inline-block; text-align:center; ${marginDir}:5px; color:${iconColor};"></i>
+          <span>${data.address}</span>
+      </div>
       
       ${data.dob || data.marital || data.tribe ? `<div class="section-title" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px; ${darkTheme ? 'color:white;' : ''}">${state.lang==='en'?'Personal':'کەسی'}</div>` : ''}
       
-      ${data.dob ? `<div class="contact-item"><b>${t.dob}:</b> <br>${data.dob}</div>` : ''}
-      ${data.marital ? `<div class="contact-item"><b>${t.marital}:</b> <br>${data.marital}</div>` : ''}
-      ${data.tribe ? `<div class="contact-item"><b>${t.tribe}:</b> <br>${data.tribe}</div>` : ''}
+      ${data.dob ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:block;">${t.dob}:</strong><span style="display:block; margin-top:3px; opacity:0.9;">${data.dob}</span></div>` : ''}
+      ${data.marital ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:block;">${t.marital}:</strong><span style="display:block; margin-top:3px; opacity:0.9;">${data.marital}</span></div>` : ''}
+      ${data.tribe ? `<div style="display:block; margin-bottom:12px; font-size:13px; color:${textColor};"><strong style="display:block;">${t.tribe}:</strong><span style="display:block; margin-top:3px; opacity:0.9;">${data.tribe}</span></div>` : ''}
     </div>
-  `;
+  `};
 
+  // --- اصلاح استایل‌های هدر برای قالب‌های بدون سایدبار ---
   const getHeaderDetails = () => `
-    <div class="contact-row">
-      ${data.phone ? `<span>${data.phone}</span>` : ''}
-      ${data.email ? ` | <span>${data.email}</span>` : ''}
-      ${data.address ? ` | <span>${data.address}</span>` : ''}
+    <div class="contact-row" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;">
+      ${data.phone ? `<span style="direction:ltr; display:inline-block;">${data.phone}</span>` : ''}
+      ${data.email ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;">${data.email}</span>` : ''}
+      ${data.address ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;">${data.address}</span>` : ''}
     </div>
-    <div class="contact-row" style="margin-top:5px; font-size:12px; opacity:0.8;">
-      ${data.dob ? `<span><b>${t.dob}:</b> ${data.dob}</span>` : ''}
-      ${data.marital ? ` | <span><b>${t.marital}:</b> ${data.marital}</span>` : ''} 
-      ${data.tribe ? ` | <span><b>${t.tribe}:</b> ${data.tribe}</span>` : ''}
+    <div class="contact-row" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:8px; font-size:12px; opacity:0.8;">
+      ${data.dob ? `<span><strong>${t.dob}:</strong> ${data.dob}</span>` : ''}
+      ${data.marital ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.marital}:</strong> ${data.marital}</span>` : ''} 
+      ${data.tribe ? `<span style="border-${state.lang === 'ku' ? 'right' : 'left'}:1px solid #ccc; padding-${state.lang === 'ku' ? 'right' : 'left'}:10px;"><strong>${t.tribe}:</strong> ${data.tribe}</span>` : ''}
     </div>
   `;
 
@@ -313,11 +331,7 @@ function renderPreview() {
           <div>
             <h1>${data.fullName}</h1>
             <h2>${data.jobTitle}</h2>
-            <div style="font-size:12px; margin-top:5px;">${data.phone} | ${data.email}</div>
-            <div style="font-size:11px; margin-top:3px; color:#666;">
-               ${data.dob ? `${t.dob}: ${data.dob} ` : ''} 
-               ${data.tribe ? `| ${data.tribe}` : ''}
-            </div>
+            ${getHeaderDetails()}
           </div>
         </header>
         ${data.summary ? `<div class="section-title">${t.summary}</div><p>${data.summary}</p>` : ''}
@@ -335,7 +349,7 @@ function renderPreview() {
         <header>
             <h1>${data.fullName}</h1>
             <h2>${data.jobTitle}</h2>
-            <div style="font-size:12px; margin-top:10px; border-top:1px solid #eee; padding-top:5px;">
+            <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
                ${getHeaderDetails()}
             </div>
         </header>
@@ -383,7 +397,7 @@ function renderPreview() {
                 <div style="color:#666;">${data.jobTitle}</div>
             </div>
             <div style="text-align:end; font-size:11px;">
-                <div>${data.phone}</div>
+                <div><span style="direction:ltr; display:inline-block;">${data.phone}</span></div>
                 <div>${data.email}</div>
                 <div>${data.address}</div>
                 ${data.dob ? `<div>${data.dob}</div>` : ''}
@@ -409,15 +423,37 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
-// =========================================================================
-// UNIFIED, BULLETPROOF PDF EXPORT (Fixes RTL Shift Bug on Mobile & Desktop)
-// =========================================================================
+// --- DUAL STRATEGY EXPORT ---
 function exportPDF() {
+  if (window.innerWidth >= 1024) {
+    const element = document.getElementById('resumePreview');
+    const originalWidth = element.style.width;
+    element.style.width = '210mm'; 
+    element.style.minHeight = '296.8mm';
+    element.style.height = 'auto';
+
+    const opt = {
+      margin: 0,
+      filename: 'CV.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.style.width = originalWidth;
+    });
+
+  } else {
+    exportPDFMobile();
+  }
+}
+
+function exportPDFMobile() {
   const original = document.getElementById('resumePreview');
   const clone = original.cloneNode(true);
   const overlay = document.createElement('div');
   
-  // کانتینر را اجباراً LTR می‌کنیم تا باگ انتقال (Shift) در html2canvas خنثی شود
   Object.assign(overlay.style, {
     position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
     zIndex: '999999', background: '#525659', overflow: 'hidden',
@@ -425,41 +461,36 @@ function exportPDF() {
     direction: 'ltr' 
   });
 
-  // اما داخل خود کلون، راست به چپ را حفظ می‌کنیم تا متن کوردی درست بماند
   Object.assign(clone.style, {
     width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm',
     transform: 'none', margin: '0', boxShadow: 'none', background: 'white',
-    direction: state.lang === 'ku' ? 'rtl' : 'ltr'
+    direction: state.lang === 'ku' ? 'rtl' : 'ltr',
+    fontFamily: state.lang === 'ku' ? "'Vazirmatn', sans-serif" : ""
   });
-  
   clone.classList.remove('mobile-preview');
+
   overlay.appendChild(clone);
   document.body.appendChild(overlay);
-
-  // ترفند نهایی: بادی اصلی سایت را موقتاً LTR می‌کنیم (کاربر متوجه نمی‌شود چون کانتینر روی صفحه است)
+  
   const originalBodyDir = document.body.style.direction;
   if (state.lang === 'ku') { document.body.style.direction = 'ltr'; }
-
   window.scrollTo(0, 0);
 
   const opt = {
-    margin: 0, 
-    filename: 'CV.pdf',
+    margin: 0, filename: 'CV.pdf',
     image: { type: 'jpeg', quality: 1 },
     html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  html2pdf().set(opt).from(clone).save()
-    .then(() => { 
-        document.body.removeChild(overlay); 
-        if (state.lang === 'ku') document.body.style.direction = originalBodyDir; // بازگشت به حالت اول
-    })
-    .catch((err) => { 
-        console.error(err);
-        if(document.body.contains(overlay)) document.body.removeChild(overlay); 
-        if (state.lang === 'ku') document.body.style.direction = originalBodyDir; 
-    });
+  html2pdf().set(opt).from(clone).save().then(() => { 
+      document.body.removeChild(overlay); 
+      if (state.lang === 'ku') document.body.style.direction = originalBodyDir;
+  }).catch((err) => { 
+      console.error(err);
+      if(document.body.contains(overlay)) document.body.removeChild(overlay); 
+      if (state.lang === 'ku') document.body.style.direction = originalBodyDir;
+  });
 }
 
 function exportWord() { 
