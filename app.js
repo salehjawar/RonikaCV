@@ -215,11 +215,10 @@ function renderPreview() {
   if (state.template === 'creative') skillType = 'dots';
   if (state.template === 'bold') skillType = 'dots';
 
-  // --- ترفند جدید و تضمینی عکس: استفاده از تگ img با عرض پویا ---
-  // این روش هم کیفیت را بالا نگه میدارد، هم چپ/راست کار میکند و هم زوم!
+  // --- ترفند طلایی برای عکس: زوم و جابجایی با فرمول ریاضی دقیق بدون افت کیفیت ---
   const photoHTML = data.photo ? `
     <div class="photo-frame">
-        <img src="${data.photo}" style="width: ${data.photoZoom}%; height: ${data.photoZoom}%; object-fit: cover; object-position: ${data.photoX}% ${data.photoY}%;">
+        <img src="${data.photo}" style="width: ${data.photoZoom}%; height: ${data.photoZoom}%; transform: translate(${50 - data.photoX}%, ${50 - data.photoY}%);">
     </div>` : '';
 
   const skillsListHTML = data.skills.length ? `
@@ -444,66 +443,38 @@ function renderPreview() {
   container.innerHTML = html;
 }
 
+// --- ساده‌سازی بی‌نقص اکسپورت PDF ---
 function exportPDF() {
-  if (window.innerWidth >= 1024) {
-    const element = document.getElementById('resumePreview');
-    const originalWidth = element.style.width;
-    element.style.width = '210mm'; 
-    element.style.minHeight = '296.8mm';
-    element.style.height = 'auto';
-
-    // Scale برگشت به 2 تا حجم فایل منطقی شود و کیفیت عکس هم با روش جدید عالی می‌ماند
-    const opt = {
-      margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save().then(() => { element.style.width = originalWidth; });
-  } else {
-    exportPDFMobile();
-  }
-}
-
-function exportPDFMobile() {
   const original = document.getElementById('resumePreview');
   const clone = original.cloneNode(true);
   const overlay = document.createElement('div');
   
+  // کانتینر در پشت صحنه (مخفی)
   Object.assign(overlay.style, {
-    position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
-    zIndex: '999999', background: '#525659', overflow: 'hidden',
-    display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: '0',
-    direction: 'ltr' 
+    position: 'absolute', top: '0', left: '0', width: '210mm',
+    zIndex: '-9999', background: 'white', margin: '0', padding: '0'
   });
 
   Object.assign(clone.style, {
     width: '210mm', minWidth: '210mm', height: 'auto', minHeight: '296.8mm',
-    transform: 'none', margin: '0', boxShadow: 'none', background: 'white'
+    transform: 'none', margin: '0', boxShadow: 'none'
   });
   
-  if (state.lang === 'ku') { clone.setAttribute('dir', 'rtl'); }
   clone.classList.remove('mobile-preview');
-
   overlay.appendChild(clone);
   document.body.appendChild(overlay);
-  
-  const originalBodyDir = document.body.style.direction;
-  if (state.lang === 'ku') { document.body.style.direction = 'ltr'; }
-  window.scrollTo(0, 0);
 
+  // کیفیت Scale 2 کاملا کافی است و حجم فایل را کم نگه میدارد
   const opt = {
-    margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, x: 0, y: 0, windowWidth: 794 },
+    margin: 0, filename: 'CV.pdf', image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
   html2pdf().set(opt).from(clone).save().then(() => { 
       document.body.removeChild(overlay); 
-      if (state.lang === 'ku') document.body.style.direction = originalBodyDir;
   }).catch((err) => { 
-      console.error(err);
       if(document.body.contains(overlay)) document.body.removeChild(overlay); 
-      if (state.lang === 'ku') document.body.style.direction = originalBodyDir;
   });
 }
 
