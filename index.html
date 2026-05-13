@@ -113,7 +113,10 @@
             
             <div id="photoControls" style="display:none; background:#f9f9f9; padding:10px; border-radius:5px; margin-bottom:10px;">
                 <label id="lblPhotoZoom" style="font-size:11px; display:block; margin-bottom:5px;">Zoom</label>
-                <input type="range" id="photoZoom" min="100" max="250" value="100" style="width:100%; margin-bottom:10px;" oninput="renderPreview()">
+                <input type="range" id="photoZoom" min="50" max="300" value="100" style="width:100%; margin-bottom:10px;" oninput="renderPreview()">
+                
+                <label id="lblPhotoX" style="font-size:11px; display:block; margin-bottom:5px;">Left / Right</label>
+                <input type="range" id="photoX" min="0" max="100" value="50" style="width:100%; margin-bottom:10px;" oninput="renderPreview()">
                 
                 <label id="lblPhotoY" style="font-size:11px; display:block; margin-bottom:5px;">Up / Down</label>
                 <input type="range" id="photoY" min="0" max="100" value="50" style="width:100%;" oninput="renderPreview()">
