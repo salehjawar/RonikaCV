@@ -155,3 +155,11 @@ body.rtl .template-bold .left-col { border-right: none; border-left: 1px solid #
   .preview-panel { padding: 0; margin: 0; display: block !important; }
   #resumePreview { box-shadow: none; margin: 0; width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; transform: none !important; }
 }
+
+/* ===== FIX RTL HTML2CANVAS BUGS (Overlapping Text & Alignment) ===== */
+body.rtl * {
+    letter-spacing: 0 !important;
+}
+body.rtl .stars {
+    letter-spacing: 2px !important; /* فقط ستاره ها فاصله داشته باشند */
+}
